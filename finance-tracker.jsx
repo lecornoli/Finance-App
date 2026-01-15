@@ -1,0 +1,890 @@
+import React, { useState, useEffect } from 'react';
+
+const FinanceApp = () => {
+    const [soundEnabled, setSoundEnabled] = useState(true);
+    const [isFirstTime, setIsFirstTime] = useState(true);
+    const [onboardingStep, setOnboardingStep] = useState(0);
+    const [showLanding, setShowLanding] = useState(true);
+    const [expenses, setExpenses] = useState([]);
+    const [income, setIncome] = useState(0);
+    const [savings, setSavings] = useState(0);
+    const [bankBalance, setBankBalance] = useState(0);
+    const [creditCardDebt, setCreditCardDebt] = useState(0);
+    const [creditCardAPR, setCreditCardAPR] = useState(18);
+    const [loans, setLoans] = useState([]);
+    const [userName, setUserName] = useState('');
+    const [view, setView] = useState('dashboard');
+    const [isPetting, setIsPetting] = useState(false);
+    const [showHearts, setShowHearts] = useState(false);
+    const [canProceed, setCanProceed] = useState(false);
+    const [showQuickAdd, setShowQuickAdd] = useState(false);
+    const [showLoanModal, setShowLoanModal] = useState(false);
+    const [decisionAmount, setDecisionAmount] = useState('');
+    const [showStatDetail, setShowStatDetail] = useState(null);
+    const [weeklyEstimate, setWeeklyEstimate] = useState('');
+    const [newLoan, setNewLoan] = useState({ name: '', amount: '', apr: '', monthlyPayment: '', purpose: 'other' });
+    const [userInteraction, setUserInteraction] = useState(0);
+
+    const playSound = (name) => {
+        if (!soundEnabled) return;
+        // Sounds disabled in artifact mode
+    };
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const onboardingComplete = await window.storage?.get('onboarding-complete');
+                const userData = await window.storage?.get('user-data');
+                const expensesData = await window.storage?.get('expenses');
+                const loansData = await window.storage?.get('loans');
+
+                if (onboardingComplete?.value === 'true') setIsFirstTime(false);
+                if (userData) {
+                    const data = JSON.parse(userData.value);
+                    setUserName(data.userName || '');
+                    setIncome(data.income || 0);
+                    setSavings(data.savings || 0);
+                    setBankBalance(data.bankBalance || 0);
+                    setCreditCardDebt(data.creditCardDebt || 0);
+                    setCreditCardAPR(data.creditCardAPR || 18);
+                }
+                if (expensesData) setExpenses(JSON.parse(expensesData.value));
+                if (loansData) setLoans(JSON.parse(loansData.value));
+            } catch (error) {
+                console.log('Starting fresh');
+            }
+        };
+        loadData();
+    }, []);
+
+    useEffect(() => {
+        switch (onboardingStep) {
+            case 0: setCanProceed(userName.trim().length > 0); break;
+            case 1: setCanProceed(income > 0); break;
+            case 2: setCanProceed(bankBalance >= 0); break;
+            case 3: setCanProceed(creditCardDebt >= 0); break;
+            case 4: setCanProceed(true); break;
+            case 5: setCanProceed(savings >= 0); break;
+            default: setCanProceed(false);
+        }
+    }, [onboardingStep, userName, income, bankBalance, creditCardDebt, savings]);
+
+    const saveUserData = async () => {
+        try {
+            await window.storage?.set('user-data', JSON.stringify({ userName, income, savings, bankBalance, creditCardDebt, creditCardAPR }));
+            await window.storage?.set('onboarding-complete', 'true');
+        } catch (error) { console.error('Error saving:', error); }
+    };
+
+    const saveExpenses = async () => {
+        try { await window.storage?.set('expenses', JSON.stringify(expenses)); }
+        catch (error) { console.error('Error saving expenses:', error); }
+    };
+
+    const saveLoans = async () => {
+        try { await window.storage?.set('loans', JSON.stringify(loans)); }
+        catch (error) { console.error('Error saving loans:', error); }
+    };
+
+    useEffect(() => { if (expenses.length > 0) saveExpenses(); }, [expenses]);
+    useEffect(() => { saveLoans(); }, [loans]);
+
+    const completeOnboarding = () => {
+        saveUserData();
+        setIsFirstTime(false);
+    };
+
+    const handleNext = () => {
+        if (!canProceed) return;
+        playSound('tap');
+        if (onboardingStep < 5) {
+            setOnboardingStep(prev => prev + 1);
+        } else {
+            playSound('success');
+            completeOnboarding();
+        }
+    };
+
+    const addWeeklyEstimate = () => {
+        if (!weeklyEstimate) return;
+        const estimate = {
+            amount: parseFloat(weeklyEstimate),
+            description: 'Weekly small expenses (estimated)',
+            category: 'other',
+            type: 'estimate',
+            id: Date.now(),
+            date: new Date().toISOString()
+        };
+        playSound('success');
+        setExpenses([...expenses, estimate]);
+        setWeeklyEstimate('');
+        setShowQuickAdd(false);
+    };
+
+    const quickAddPreset = (description, estimatedAmount, category) => {
+        const expense = {
+            amount: estimatedAmount,
+            description,
+            category,
+            type: 'quick',
+            id: Date.now(),
+            date: new Date().toISOString()
+        };
+        playSound('success');
+        setExpenses([...expenses, expense]);
+    };
+
+    const addLoan = () => {
+        if (!newLoan.name || !newLoan.amount || !newLoan.monthlyPayment) return;
+        const loan = {
+            id: Date.now(),
+            name: newLoan.name,
+            amount: parseFloat(newLoan.amount),
+            apr: parseFloat(newLoan.apr) || 0,
+            monthlyPayment: parseFloat(newLoan.monthlyPayment),
+            purpose: newLoan.purpose,
+            createdAt: new Date().toISOString()
+        };
+        playSound('success');
+        setLoans([...loans, loan]);
+        setNewLoan({ name: '', amount: '', apr: '', monthlyPayment: '', purpose: 'other' });
+        setShowLoanModal(false);
+    };
+
+    const deleteLoan = (id) => { setLoans(loans.filter(l => l.id !== id)); };
+    const deleteExpense = (id) => { setExpenses(expenses.filter(e => e.id !== id)); };
+
+    // Calculations
+    const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+    const totalLoanPayments = loans.reduce((sum, l) => sum + l.monthlyPayment, 0);
+    const ccMinPayment = creditCardDebt > 0 ? Math.max(creditCardDebt * 0.02, 25) : 0;
+    const totalDebtPayments = totalLoanPayments + ccMinPayment;
+    const monthlyNet = income - totalExpenses;
+    const safeToSpend = Math.round((monthlyNet || 0) - (totalDebtPayments || 0));
+    const totalDebt = creditCardDebt + loans.reduce((sum, l) => sum + l.amount, 0);
+    const netWorth = bankBalance + savings - totalDebt;
+    const savingsRate = income > 0 ? (monthlyNet / income) * 100 : 0;
+    const spendingStatus = safeToSpend > income * 0.2 ? 'safe' : safeToSpend > 0 ? 'caution' : 'overspent';
+
+    const getWealthContext = () => {
+        const monthsRunway = income > 0 ? ((bankBalance + savings) / income).toFixed(1) : 0;
+        const bufferTarget = income * 3;
+        const bufferProgress = bufferTarget > 0 ? Math.min(100, Math.round(((bankBalance + savings) / bufferTarget) * 100)) : 0;
+        return { monthsRunway, bufferTarget, bufferProgress };
+    };
+
+    const wealth = getWealthContext();
+    const wealthPhase = wealth.monthsRunway < 2 ? 'survive' : wealth.bufferProgress < 100 ? 'stabilize' : 'scale';
+
+    const simulateDecision = (amount) => {
+        if (!amount || amount <= 0 || income <= 0) return null;
+        const dailyIncome = Math.max(1, (income - totalExpenses) / 30);
+        const daysLost = Math.round(amount / dailyIncome);
+        const newBalance = bankBalance + savings - amount;
+        const newBufferProgress = Math.min(100, Math.round((newBalance / wealth.bufferTarget) * 100));
+        const newMonthsRunway = income > 0 ? (newBalance / income).toFixed(1) : 0;
+
+        const insights = [];
+        if (daysLost > 30) insights.push({ type: 'warning', text: `This costs ${daysLost} days of runway — over a month of freedom` });
+        else if (daysLost > 7) insights.push({ type: 'caution', text: `Worth ${daysLost} days of runway — plan carefully` });
+        else insights.push({ type: 'safe', text: `Only ${daysLost} days of runway — manageable impact` });
+
+        if (newBufferProgress < wealth.bufferProgress - 10) insights.push({ type: 'warning', text: `Weakens buffer from ${wealth.bufferProgress}% to ${newBufferProgress}%` });
+        if (newMonthsRunway < 2 && wealth.monthsRunway >= 2) insights.push({ type: 'danger', text: `Drops you below 2 months runway — risky territory` });
+        if (amount > monthlyNet) insights.push({ type: 'warning', text: `This exceeds your monthly surplus of RM${monthlyNet}` });
+
+        return { daysLost, newBufferProgress, newMonthsRunway, insights };
+    };
+
+    const decisionImpact = simulateDecision(Number(decisionAmount));
+
+    const getPersonalizedAdvice = () => {
+        const adviceList = [];
+        
+        if (expenses.length > 0) {
+            const foodExpenses = expenses.filter(e => e.category === 'food').reduce((sum, e) => sum + e.amount, 0);
+            if (foodExpenses > income * 0.15) {
+                adviceList.push({ emoji: '🍔', text: `You're spending ${((foodExpenses / income) * 100).toFixed(0)}% on food. Try meal prepping?` });
+            }
+        }
+
+        if (creditCardDebt > 0 && loans.length === 0) {
+            const ccInterest = (creditCardDebt * (creditCardAPR / 100)) / 12;
+            adviceList.push({ emoji: '💡', text: `CC costing you RM${ccInterest.toFixed(0)}/mo in interest. Consider a lower-rate loan.` });
+        }
+
+        if (savingsRate > 20) adviceList.push({ emoji: '🎉', text: `${savingsRate.toFixed(0)}% savings rate? You're crushing it!` });
+        if (wealth.monthsRunway > 0 && wealth.monthsRunway < 2) adviceList.push({ emoji: '🛟', text: `You have ${wealth.monthsRunway} months of runway. Preserve cash.` });
+        if (adviceList.length === 0) adviceList.push({ emoji: '✨', text: `You're doing great! Keep tracking.` });
+
+        return adviceList[Math.floor(Math.random() * adviceList.length)];
+    };
+
+    const advice = getPersonalizedAdvice();
+
+    const petAvatar = () => {
+        setUserInteraction(prev => prev + 1);
+        setIsPetting(true);
+        setShowHearts(true);
+        setTimeout(() => { setIsPetting(false); setShowHearts(false); }, 1500);
+    };
+
+    const phaseThemes = {
+        survive: { label: '🛟 Survival Mode', description: 'Protect cash and preserve runway' },
+        stabilize: { label: '🧱 Stabilizing', description: 'Building consistency and buffer' },
+        scale: { label: '🚀 Scaling', description: 'Expanding freedom and options' }
+    };
+
+    const categoryColors = {
+        food: 'bg-orange-100 text-orange-600 border-orange-200',
+        transport: 'bg-blue-100 text-blue-600 border-blue-200',
+        housing: 'bg-purple-100 text-purple-600 border-purple-200',
+        utilities: 'bg-green-100 text-green-600 border-green-200',
+        other: 'bg-gray-100 text-gray-600 border-gray-200'
+    };
+
+    if (isFirstTime) {
+        const questions = [
+            { title: "Welcome! What's your name?", subtitle: "Let's get to know each other! ✨", 
+              input: <input type="text" placeholder="Enter your name..." value={userName} onChange={(e) => setUserName(e.target.value)} autoFocus
+                className="w-full p-4 text-lg rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none bg-white shadow-sm" />
+            },
+            { title: "How much do you earn monthly?", subtitle: "This helps us understand your cash flow 💰",
+              input: <input type="number" placeholder="e.g., 5000" value={income || ''} onChange={(e) => setIncome(parseFloat(e.target.value) || 0)} autoFocus
+                className="w-full p-4 text-lg rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none bg-white shadow-sm" />
+            },
+            { title: "What's in your bank account?", subtitle: "Just your checking/savings total 🏦",
+              input: <input type="number" placeholder="e.g., 10000" value={bankBalance || ''} onChange={(e) => setBankBalance(parseFloat(e.target.value) || 0)} autoFocus
+                className="w-full p-4 text-lg rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none bg-white shadow-sm" />
+            },
+            { title: "Any credit card debt?", subtitle: "It's okay, we're here to help! 💳",
+              input: <input type="number" placeholder="e.g., 0" value={creditCardDebt || ''} onChange={(e) => setCreditCardDebt(parseFloat(e.target.value) || 0)} autoFocus
+                className="w-full p-4 text-lg rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none bg-white shadow-sm" />
+            },
+            { title: "Any loans?", subtitle: "You can skip this and add later! 🚗",
+              input: <div className="text-center py-8"><p className="text-gray-600 mb-4">You can manage loans in the app anytime</p>
+                <button onClick={handleNext} className="px-8 py-3 bg-purple-100 text-purple-600 rounded-xl font-semibold">Skip</button></div>
+            },
+            { title: "How much can you save monthly?", subtitle: "Your savings/investments 🌱",
+              input: <input type="number" placeholder="e.g., 1000" value={savings || ''} onChange={(e) => setSavings(parseFloat(e.target.value) || 0)} autoFocus
+                className="w-full p-4 text-lg rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none bg-white shadow-sm" />
+            }
+        ];
+
+        const currentQ = questions[onboardingStep];
+        const progress = ((onboardingStep + 1) / questions.length) * 100;
+
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-100 to-blue-50 flex items-center justify-center p-4">
+                <div className="max-w-md w-full">
+                    <div className="mb-8">
+                        <div className="h-2 bg-white/50 rounded-full overflow-hidden">
+                            <div className="h-full bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-500" style={{ width: `${progress}%` }}></div>
+                        </div>
+                        <div className="text-center mt-2 text-sm text-purple-600 font-medium">Step {onboardingStep + 1} of {questions.length}</div>
+                    </div>
+
+                    <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl p-8">
+                        <div className="text-center mb-8">
+                            <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-4xl">✨</div>
+                            <h2 className="text-3xl font-bold text-gray-800 mb-2">{currentQ.title}</h2>
+                            <p className="text-gray-600">{currentQ.subtitle}</p>
+                        </div>
+
+                        <div className="mb-6">{currentQ.input}</div>
+
+                        {onboardingStep !== 4 && (
+                            <div className="mb-6 text-center">
+                                {canProceed ? <p className="text-sm text-green-600 font-medium">✓ Tap Next</p> :
+                                <p className="text-sm text-gray-500">👆 Fill in above</p>}
+                            </div>
+                        )}
+
+                        {onboardingStep !== 4 && (
+                            <div className="flex gap-3">
+                                {onboardingStep > 0 && (
+                                    <button onClick={() => setOnboardingStep(prev => prev - 1)}
+                                        className="flex-1 py-4 rounded-2xl border-2 border-gray-200 text-gray-600 font-semibold">← Back</button>
+                                )}
+                                <button onClick={handleNext} disabled={!canProceed}
+                                    className={`flex-1 py-4 rounded-2xl font-semibold transition shadow-lg ${
+                                        canProceed ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white' : 'bg-gray-200 text-gray-400'}`}>
+                                    {onboardingStep < 5 ? 'Next →' : 'Let\'s Go! ⭐'}
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (showLanding) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-100 to-blue-50 flex items-center justify-center p-4">
+                <div className="max-w-2xl w-full text-center">
+                    <div className={`mb-6 p-4 rounded-2xl ${
+                        spendingStatus === 'safe' ? 'bg-green-100 border-2 border-green-300' :
+                        spendingStatus === 'caution' ? 'bg-yellow-100 border-2 border-yellow-300' :
+                        'bg-red-100 border-2 border-red-300'}`}>
+                        <div className="flex items-center justify-center gap-2">
+                            <span>{spendingStatus === 'safe' ? '✅' : spendingStatus === 'caution' ? 'ℹ️' : '⚠️'}</span>
+                            <div className="text-left flex-1">
+                                <div className={`font-bold text-sm ${
+                                    spendingStatus === 'safe' ? 'text-green-700' :
+                                    spendingStatus === 'caution' ? 'text-yellow-700' : 'text-red-700'}`}>
+                                    {spendingStatus === 'safe' && 'Safe to spend (runway-safe)'}
+                                    {spendingStatus === 'caution' && 'Spend carefully'}
+                                    {spendingStatus === 'overspent' && '⚠️ Overspent'}
+                                </div>
+                                <div className={`text-2xl font-bold ${
+                                    spendingStatus === 'safe' ? 'text-green-600' :
+                                    spendingStatus === 'caution' ? 'text-yellow-600' : 'text-red-600'}`}>
+                                    RM{Math.abs(safeToSpend).toLocaleString()}
+                                </div>
+                                <div className="text-xs opacity-70 mt-1">≈ {wealth.monthsRunway} months runway</div>
+                                <div className="text-xs font-semibold mt-1 text-gray-700">{phaseThemes[wealthPhase].label}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div onClick={petAvatar} className="w-64 h-64 mx-auto mb-6 cursor-pointer relative bg-white rounded-full shadow-2xl p-8">
+                        <div className="text-8xl">🧋</div>
+                        {showHearts && (
+                            <div className="absolute inset-0 pointer-events-none">
+                                {[...Array(5)].map((_, i) => (
+                                    <div key={i} className="absolute animate-bounce" style={{ left: `${30 + i * 10}%`, bottom: '50%' }}>
+                                        ❤️
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        {userInteraction > 0 && (
+                            <div className="absolute top-0 right-0 w-14 h-14 bg-gradient-to-br from-pink-400 to-red-400 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+                                <div className="text-center">❤️<div className="text-xs">{userInteraction}</div></div>
+                            </div>
+                        )}
+                    </div>
+
+                    <p className="text-sm text-gray-500 mb-6">👆 Tap for good vibes!</p>
+
+                    <div className="grid grid-cols-3 gap-4 mb-8">
+                        <div className="bg-white/80 rounded-2xl p-4 shadow-lg">
+                            <div className="text-2xl mb-2">💰</div>
+                            <div className="text-sm text-gray-600 mb-1">Net Worth</div>
+                            <div className={`text-xl font-bold ${netWorth >= 0 ? 'text-green-600' : 'text-red-600'}`}>RM{netWorth.toLocaleString()}</div>
+                        </div>
+                        <div className="bg-white/80 rounded-2xl p-4 shadow-lg">
+                            <div className="text-2xl mb-2">📊</div>
+                            <div className="text-sm text-gray-600 mb-1">Savings</div>
+                            <div className="text-xl font-bold text-purple-600">{savingsRate.toFixed(0)}%</div>
+                        </div>
+                        <div className="bg-white/80 rounded-2xl p-4 shadow-lg">
+                            <div className="text-2xl mb-2">🎯</div>
+                            <div className="text-sm text-gray-600 mb-1">Monthly Net</div>
+                            <div className={`text-xl font-bold ${monthlyNet >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>RM{monthlyNet.toLocaleString()}</div>
+                        </div>
+                    </div>
+
+                    <div className="space-y-3 mb-8">
+                        <button onClick={() => setShowLanding(false)}
+                            className="w-full py-5 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold text-lg shadow-xl">
+                            Let's Build Wealth Today! ›
+                        </button>
+
+                        <div className="grid grid-cols-2 gap-3">
+                            <button onClick={() => { setShowLanding(false); setShowQuickAdd(true); }}
+                                className="py-4 rounded-2xl bg-white/80 border-2 border-purple-200 text-purple-600 font-semibold shadow-lg">
+                                ⚡ Quick Log
+                            </button>
+                            <button onClick={() => { setShowLanding(false); setView('advice'); }}
+                                className="py-4 rounded-2xl bg-white/80 border-2 border-blue-200 text-blue-600 font-semibold shadow-lg">
+                                💡 My Advice
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-2xl p-4 border-2 border-yellow-200">
+                        <div className="flex items-center gap-3">
+                            <span className="text-2xl">{advice.emoji}</span>
+                            <p className="text-sm text-gray-700 text-left flex-1">{advice.text}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Main app view
+    return (
+        <div className="h-screen flex flex-col overflow-hidden" style={{
+            background: wealthPhase === 'survive' ? 'linear-gradient(to bottom right, #fef2f2, #fff7ed, #fefce8)' :
+                        wealthPhase === 'stabilize' ? 'linear-gradient(to bottom right, #fefce8, #f0fdf4, #ecfdf5)' :
+                        'linear-gradient(to bottom right, #faf5ff, #fce7f3, #eff6ff)'
+        }}>
+            {/* Fixed Header */}
+            <div className="p-4 bg-white/80 backdrop-blur-sm border-b-2 border-gray-100">
+                <div className={`p-3 rounded-2xl ${
+                    spendingStatus === 'safe' ? 'bg-green-100 border-2 border-green-300' :
+                    spendingStatus === 'caution' ? 'bg-yellow-100 border-2 border-yellow-300' :
+                    'bg-red-100 border-2 border-red-300'}`}>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 flex-1">
+                            <span>{spendingStatus === 'safe' ? '✅' : spendingStatus === 'caution' ? 'ℹ️' : '⚠️'}</span>
+                            <div className="flex-1">
+                                <div className={`font-bold text-xs ${
+                                    spendingStatus === 'safe' ? 'text-green-700' :
+                                    spendingStatus === 'caution' ? 'text-yellow-700' : 'text-red-700'}`}>
+                                    {spendingStatus === 'safe' && 'Safe to spend'}
+                                    {spendingStatus === 'caution' ? 'Spend carefully' : spendingStatus === 'overspent' && 'Overspent'}
+                                </div>
+                                <div className={`text-lg font-bold ${
+                                    spendingStatus === 'safe' ? 'text-green-600' :
+                                    spendingStatus === 'caution' ? 'text-yellow-600' : 'text-red-600'}`}>
+                                    RM{Math.abs(safeToSpend).toLocaleString()}
+                                </div>
+                                <div className="text-[10px] font-semibold text-gray-600 mt-0.5">
+                                    {phaseThemes[wealthPhase].label} • 
+                                    <span className="ml-1" style={{color: view === 'dashboard' ? '#9333ea' : view === 'loans' ? '#2563eb' : '#ea580c'}}>
+                                        {view === 'dashboard' ? 'Home' : view === 'loans' ? 'Loans' : 'Advice'}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <button onClick={() => setShowLanding(true)}
+                                className="w-12 h-12 rounded-xl bg-white shadow-lg border-2 border-purple-200 text-2xl">
+                                🧋
+                            </button>
+                            <button onClick={() => setSoundEnabled(!soundEnabled)}
+                                className="w-10 h-10 rounded-xl bg-white shadow border-2 border-gray-200 text-sm">
+                                {soundEnabled ? '🔊' : '🔇'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Modals */}
+            {showQuickAdd && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowQuickAdd(false)}>
+                    <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-xl font-bold text-gray-800">Quick Log</h3>
+                            <button onClick={() => setShowQuickAdd(false)} className="text-gray-400 text-2xl">×</button>
+                        </div>
+
+                        <div className="space-y-4 mb-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">This week's small stuff</label>
+                                <div className="flex gap-2">
+                                    <input type="number" placeholder="e.g., 150" value={weeklyEstimate} onChange={(e) => setWeeklyEstimate(e.target.value)}
+                                        className="flex-1 p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none" />
+                                    <button onClick={addWeeklyEstimate}
+                                        className="px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold">
+                                        Add
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="border-t-2 border-gray-100 pt-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Quick presets</label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {[
+                                        { label: 'Groceries', amount: 150, category: 'food' },
+                                        { label: 'Gas', amount: 60, category: 'transport' },
+                                        { label: 'Dinner Out', amount: 100, category: 'food' },
+                                        { label: 'Utilities', amount: 120, category: 'utilities' }
+                                    ].map((preset) => (
+                                        <button key={preset.label} onClick={() => { quickAddPreset(preset.label, preset.amount, preset.category); setShowQuickAdd(false); }}
+                                            className="p-3 bg-gray-100 rounded-xl text-sm font-medium text-gray-700">
+                                            {preset.label} <span className="text-xs">(~RM{preset.amount})</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {showLoanModal && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowLoanModal(false)}>
+                    <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-xl font-bold text-gray-800">Add Loan</h3>
+                            <button onClick={() => setShowLoanModal(false)} className="text-gray-400 text-2xl">×</button>
+                        </div>
+
+                        <div className="space-y-3 mb-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Loan Name</label>
+                                <input type="text" placeholder="e.g., Personal Loan" value={newLoan.name} onChange={(e) => setNewLoan({ ...newLoan, name: e.target.value })}
+                                    className="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none" />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+                                    <input type="number" placeholder="5000" value={newLoan.amount} onChange={(e) => setNewLoan({ ...newLoan, amount: e.target.value })}
+                                        className="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">APR %</label>
+                                    <input type="number" placeholder="8" value={newLoan.apr} onChange={(e) => setNewLoan({ ...newLoan, apr: e.target.value })}
+                                        className="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Payment</label>
+                                <input type="number" placeholder="150" value={newLoan.monthlyPayment} onChange={(e) => setNewLoan({ ...newLoan, monthlyPayment: e.target.value })}
+                                    className="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none" />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Purpose</label>
+                                <select value={newLoan.purpose} onChange={(e) => setNewLoan({ ...newLoan, purpose: e.target.value })}
+                                    className="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none">
+                                    <option value="debt-consolidation">Pay off CC debt</option>
+                                    <option value="emergency-buffer">Emergency buffer</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button onClick={addLoan}
+                            className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold">
+                            Add Loan
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {showStatDetail && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowStatDetail(null)}>
+                    <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-xl font-bold text-gray-800">{showStatDetail.title}</h3>
+                            <button onClick={() => setShowStatDetail(null)} className="text-gray-400 text-2xl">×</button>
+                        </div>
+                        <div className="space-y-3 text-sm text-gray-700">
+                            {showStatDetail.details.map((detail, i) => (
+                                <div key={i} className="p-3 bg-gray-50 rounded-xl">{detail}</div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto">
+                <div className="max-w-6xl mx-auto p-4">
+                    {/* Tab Navigation */}
+                    <div className="flex gap-2 mb-4 overflow-x-auto pb-2 -mx-4 px-4">
+                        <button onClick={() => setShowQuickAdd(true)}
+                            className="flex items-center gap-2 px-4 py-3 rounded-2xl font-semibold bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg whitespace-nowrap">
+                            ⚡ Quick Log
+                        </button>
+                        {[
+                            { id: 'dashboard', label: 'Home', icon: '🏠' },
+                            { id: 'loans', label: 'Loans', icon: '💳' },
+                            { id: 'advice', label: 'Advice', icon: '💡' }
+                        ].map(tab => (
+                            <button key={tab.id} onClick={() => setView(tab.id)}
+                                className={`flex items-center gap-2 px-4 py-3 rounded-2xl font-semibold transition-all whitespace-nowrap ${
+                                    view === tab.id ? 'bg-white text-purple-600 shadow-lg border-2 border-purple-300' :
+                                    'bg-white/50 text-gray-700 border-2 border-gray-200'}`}>
+                                <span>{tab.icon}</span>
+                                {tab.label}
+                            </button>
+                        ))}
+                    </div>
+
+                    {view === 'dashboard' && (
+                        <div className="space-y-4 pb-4">
+                            {/* Interactive Stats */}
+                            <div className="grid grid-cols-2 gap-3">
+                                <div onClick={() => setShowStatDetail({
+                                    title: 'Income Breakdown',
+                                    details: [
+                                        `Monthly Income: RM${income.toLocaleString()}`,
+                                        `Daily Income: RM${(income / 30).toFixed(0)}`,
+                                        `After expenses: RM${Math.max(0, monthlyNet).toLocaleString()}/month`
+                                    ]
+                                })}
+                                    className="bg-white rounded-2xl p-4 shadow-lg border-2 border-green-200 cursor-pointer">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-gray-600 font-medium text-sm">Income</span>
+                                        <span className="text-xl">💵</span>
+                                    </div>
+                                    <div className="text-2xl font-bold text-green-600">RM{income.toLocaleString()}</div>
+                                    <div className="text-xs text-gray-500 mt-1">Tap for details</div>
+                                </div>
+
+                                <div onClick={() => {
+                                    const topCategories = Object.entries(
+                                        expenses.reduce((acc, e) => {
+                                            acc[e.category] = (acc[e.category] || 0) + e.amount;
+                                            return acc;
+                                        }, {})
+                                    ).sort((a, b) => b[1] - a[1]).slice(0, 3);
+
+                                    setShowStatDetail({
+                                        title: 'Expenses Breakdown',
+                                        details: [
+                                            `Total: RM${totalExpenses.toLocaleString()}`,
+                                            ...topCategories.map(([cat, amt]) => `${cat}: RM${amt.toLocaleString()}`),
+                                            `${expenses.length} transactions tracked`
+                                        ]
+                                    });
+                                }}
+                                    className="bg-white rounded-2xl p-4 shadow-lg border-2 border-red-200 cursor-pointer">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-gray-600 font-medium text-sm">Expenses</span>
+                                        <span className="text-xl">📊</span>
+                                    </div>
+                                    <div className="text-2xl font-bold text-red-600">RM{totalExpenses.toLocaleString()}</div>
+                                    <div className="text-xs text-gray-500 mt-1">Tap for details</div>
+                                </div>
+
+                                <div onClick={() => setShowStatDetail({
+                                    title: 'Monthly Net',
+                                    details: [
+                                        `Income: RM${income.toLocaleString()}`,
+                                        `Expenses: RM${totalExpenses.toLocaleString()}`,
+                                        `Net: RM${monthlyNet.toLocaleString()}`,
+                                        monthlyNet > 0 ? `Saving ${((monthlyNet / income) * 100).toFixed(0)}% of income!` : 'Try to reduce expenses'
+                                    ]
+                                })}
+                                    className="bg-white rounded-2xl p-4 shadow-lg border-2 border-blue-200 cursor-pointer">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-gray-600 font-medium text-sm">Monthly Net</span>
+                                        <span className="text-xl">💰</span>
+                                    </div>
+                                    <div className={`text-2xl font-bold ${monthlyNet >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>RM{monthlyNet.toLocaleString()}</div>
+                                    <div className="text-xs text-gray-500 mt-1">Tap for details</div>
+                                </div>
+
+                                <div onClick={() => setShowStatDetail({
+                                    title: 'Savings Rate',
+                                    details: [
+                                        `Current Rate: ${savingsRate.toFixed(0)}%`,
+                                        savingsRate > 30 ? '🔥 Excellent!' :
+                                            savingsRate > 20 ? '👍 Good!' :
+                                                savingsRate > 10 ? '📈 Room to improve' :
+                                                    '⚠️ Try to save more',
+                                        `Aim for 20-30% savings rate`
+                                    ]
+                                })}
+                                    className="bg-white rounded-2xl p-4 shadow-lg border-2 border-purple-200 cursor-pointer">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-gray-600 font-medium text-sm">Savings</span>
+                                        <span className="text-xl">🏦</span>
+                                    </div>
+                                    <div className="text-2xl font-bold text-purple-600">{savingsRate.toFixed(0)}%</div>
+                                    <div className="text-xs text-gray-500 mt-1">Tap for details</div>
+                                </div>
+                            </div>
+
+                            {/* Net Worth Card */}
+                            <div className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl p-6 shadow-2xl text-white">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <div className="text-3xl">✨</div>
+                                    <div>
+                                        <h3 className="text-xl font-bold">Net Worth</h3>
+                                        <p className="text-purple-100 text-sm">Assets - Liabilities</p>
+                                    </div>
+                                </div>
+                                <div className="text-4xl font-bold mb-4">RM{netWorth.toLocaleString()}</div>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3">
+                                        <div className="text-xs text-purple-100 mb-1">Assets</div>
+                                        <div className="text-xl font-bold">RM{(bankBalance + savings).toLocaleString()}</div>
+                                    </div>
+                                    <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3">
+                                        <div className="text-xs text-purple-100 mb-1">Debts</div>
+                                        <div className="text-xl font-bold">RM{totalDebt.toLocaleString()}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Decision Simulator */}
+                            <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-purple-100">
+                                <h3 className="font-bold text-gray-800 mb-3">🧠 Decision Simulator</h3>
+                                <p className="text-sm text-gray-600 mb-3">Test a purchase before making it. Think in runway, not impulse.</p>
+
+                                <input
+                                    type="number"
+                                    placeholder="If I spend RM..."
+                                    value={decisionAmount}
+                                    onChange={(e) => setDecisionAmount(e.target.value)}
+                                    className="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none mb-3"
+                                />
+
+                                {decisionImpact && decisionImpact.insights && (
+                                    <div className="space-y-2">
+                                        {decisionImpact.insights.map((insight, i) => (
+                                            <div key={i} className={`p-3 rounded-xl text-sm ${
+                                                insight.type === 'danger' ? 'bg-red-50 text-red-700 border-2 border-red-200' :
+                                                insight.type === 'warning' ? 'bg-orange-50 text-orange-700 border-2 border-orange-200' :
+                                                insight.type === 'caution' ? 'bg-yellow-50 text-yellow-700 border-2 border-yellow-200' :
+                                                'bg-green-50 text-green-700 border-2 border-green-200'
+                                            }`}>
+                                                {insight.text}
+                                            </div>
+                                        ))}
+                                        
+                                        <div className="mt-3 pt-3 border-t-2 border-gray-100">
+                                            <div className="grid grid-cols-2 gap-2 text-xs">
+                                                <div className="p-2 bg-gray-50 rounded-lg">
+                                                    <div className="text-gray-500">New Runway</div>
+                                                    <div className="font-bold text-gray-800">{decisionImpact.newMonthsRunway} months</div>
+                                                </div>
+                                                <div className="p-2 bg-gray-50 rounded-lg">
+                                                    <div className="text-gray-500">Buffer</div>
+                                                    <div className="font-bold text-gray-800">{decisionImpact.newBufferProgress}%</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Recent Activity */}
+                            {expenses.length > 0 && (
+                                <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-gray-100">
+                                    <h3 className="text-lg font-bold mb-3 text-gray-800">Recent Activity</h3>
+                                    <div className="space-y-2">
+                                        {expenses.slice().reverse().slice(0, 5).map((expense) => {
+                                            const colors = categoryColors[expense.category];
+                                            return (
+                                                <div key={expense.id} className={`flex items-center justify-between p-3 rounded-xl ${colors} border-2`}>
+                                                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                                                        <span className="px-2 py-1 rounded-lg text-xs font-medium">
+                                                            {expense.type === 'estimate' ? '≈' : expense.type === 'quick' ? '⚡' : '💰'}
+                                                        </span>
+                                                        <span className="text-gray-800 font-medium truncate flex-1 text-sm">{expense.description}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-lg font-bold text-gray-800">RM{expense.amount}</span>
+                                                        <button onClick={() => deleteExpense(expense.id)} className="text-red-500 text-xl">×</button>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {view === 'loans' && (
+                        <div className="space-y-4 pb-4">
+                            <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-purple-100">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-xl font-bold text-gray-800">My Loans</h3>
+                                    <button onClick={() => setShowLoanModal(true)}
+                                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold">
+                                        ➕ Add Loan
+                                    </button>
+                                </div>
+
+                                {loans.length === 0 ? (
+                                    <div className="text-center py-12">
+                                        <div className="text-6xl mb-4">💳</div>
+                                        <p className="text-gray-500 mb-4">No loans yet</p>
+                                        <p className="text-sm text-gray-400">Add a loan to track payments</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        {loans.map((loan) => (
+                                            <div key={loan.id} className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4 border-2 border-blue-200">
+                                                <div className="flex items-start justify-between mb-2">
+                                                    <div className="flex-1">
+                                                        <h4 className="font-bold text-gray-800">{loan.name}</h4>
+                                                        <p className="text-sm text-gray-600">{loan.apr}% APR</p>
+                                                    </div>
+                                                    <button onClick={() => deleteLoan(loan.id)} className="text-red-500 text-xl">×</button>
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-2 text-sm">
+                                                    <div>
+                                                        <div className="text-gray-600">Amount</div>
+                                                        <div className="font-bold text-gray-800">RM{loan.amount.toLocaleString()}</div>
+                                                    </div>
+                                                    <div>
+                                                        <div className="text-gray-600">Monthly Payment</div>
+                                                        <div className="font-bold text-blue-600">RM{loan.monthlyPayment.toLocaleString()}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {creditCardDebt > 0 && loans.length === 0 && (
+                                    <div className="mt-4 p-4 bg-yellow-50 rounded-xl border-2 border-yellow-200">
+                                        <div className="flex items-start gap-2">
+                                            <span>💡</span>
+                                            <div className="text-sm text-yellow-700">
+                                                <strong>Tip:</strong> You have RM{creditCardDebt.toLocaleString()} in CC debt at {creditCardAPR}% APR.
+                                                A lower-rate loan could save you RM{((creditCardDebt * (creditCardAPR / 100)) / 12).toFixed(0)}/month!
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {view === 'advice' && (
+                        <div className="space-y-3 pb-4">
+                            <div className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-2xl p-6 border-2 border-yellow-200">
+                                <div className="flex items-start gap-3">
+                                    <span className="text-4xl">{advice.emoji}</span>
+                                    <div className="flex-1">
+                                        <h3 className="font-bold text-gray-800 mb-2 text-lg">Your Personalized Tip</h3>
+                                        <p className="text-gray-700 leading-relaxed">{advice.text}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-100">
+                                <h3 className="font-bold text-gray-800 mb-3">Quick Reminders</h3>
+                                <div className="space-y-2 text-sm text-gray-600">
+                                    <div className="flex gap-2"><span>✨</span><p>Track the big stuff, estimate the small stuff</p></div>
+                                    <div className="flex gap-2"><span>💰</span><p>Aim to save 20-30% of your income</p></div>
+                                    <div className="flex gap-2"><span>🎯</span><p>Build 3-6 months of expenses as emergency fund</p></div>
+                                    <div className="flex gap-2"><span>📊</span><p>Focus on trends, not perfection</p></div>
+                                </div>
+                            </div>
+
+                            <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-purple-100">
+                                <h3 className="font-bold text-gray-800 mb-3">Your Financial Phase</h3>
+                                <div className={`p-4 rounded-xl mb-3 ${
+                                    wealthPhase === 'survive' ? 'bg-red-50 border-2 border-red-200' :
+                                    wealthPhase === 'stabilize' ? 'bg-yellow-50 border-2 border-yellow-200' :
+                                    'bg-green-50 border-2 border-green-200'}`}>
+                                    <div className="font-bold text-lg mb-1">{phaseThemes[wealthPhase].label}</div>
+                                    <div className="text-sm text-gray-700">{phaseThemes[wealthPhase].description}</div>
+                                </div>
+                                <div className="space-y-2 text-sm">
+                                    <div className="flex justify-between p-2 bg-gray-50 rounded-lg">
+                                        <span className="text-gray-600">Financial Runway</span>
+                                        <span className="font-bold">{wealth.monthsRunway} months</span>
+                                    </div>
+                                    <div className="flex justify-between p-2 bg-gray-50 rounded-lg">
+                                        <span className="text-gray-600">Buffer Progress</span>
+                                        <span className="font-bold">{wealth.bufferProgress}%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default FinanceApp;
