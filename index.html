@@ -2543,9 +2543,17 @@
                                         Average monthly take-home
                                     </div>
 
-                                    <div className="text-4xl font-bold text-green-600 mb-4">
-                                        ${income.toLocaleString()}
-                                    </div>
+                                    <input
+                                        type="number"
+                                        value={income}
+                                        onChange={(e) => setIncome(Number(e.target.value) || 0)}
+                                        className="w-full p-4 text-3xl font-bold text-green-600 rounded-2xl border-2 border-green-200 focus:outline-none focus:border-green-400 mb-4"
+                                    />
+                                    <p className="text-sm text-gray-600">
+                                        Adjust this anytime if your income changes.
+                                        The app always uses your latest estimate for calculations.
+                                    </p>
+
 
                                     <p className="text-sm text-gray-600 mb-4">
                                         This is the income used to calculate your runway,
