@@ -1287,9 +1287,24 @@
                     estimationAccuracy: Math.min(100, 90 + userPatterns.consecutiveWeeks * 2)
                 });
             };
+            const hardReset = () => {
+                if (!confirm('This will erase ALL data. Continue?')) return;
+                if (!confirm('This cannot be undone. Are you sure?')) return;
+                if (!confirm('Last chance. Reset everything?')) return;
+
+                window.storage.delete('user-data');
+                window.storage.delete('expenses');
+                window.storage.delete('loans');
+                window.storage.delete('user-patterns');
+                window.storage.delete('onboarding-complete');
+
+                location.reload();
+            };
 
             const deleteExpense = (id) => {
                 setExpenses(expenses.filter(e => e.id !== id));
+
+
             };
 
             // Calculations
@@ -1361,6 +1376,14 @@
             };
 
             const decisionImpact = simulateDecision(Number(decisionAmount));
+            const decisionAdvice = decisionImpact
+                ? decisionImpact.daysLost > 7
+                    ? 'This is a high-impact purchase. Do you REALLY need it?'
+                    : decisionImpact.daysLost > 3
+                        ? 'Moderate impact. Make sure this is a need not a WANT.'
+                        : 'Low impact. You can breathe.'
+                : null;
+
 
             // Smart, personalized advice based on user behavior
             const getPersonalizedAdvice = () => {
@@ -1981,7 +2004,7 @@
                                     <button onClick={() => {
                                         playSound('tap');
                                         setShowLanding(false);
-                                        setShowQuickAdd('advice');
+                                        setView('advice');
                                     }}
                                         className="py-4 rounded-2xl bg-white/80 backdrop-blur-sm border-2 border-purple-200 text-purple-600 font-semibold active:bg-purple-50 active:scale-95 transition shadow-lg flex items-center justify-center gap-2">
                                         <Zap className="w-5 h-5" />
@@ -1990,7 +2013,7 @@
                                     <button onClick={() => {
                                         playSound('tap');
                                         setShowLanding(false);
-                                        setShowQuickAdd('advice');
+                                        setView('advice');
                                     }}
 
                                         className="py-4 rounded-2xl bg-white/80 backdrop-blur-sm border-2 border-blue-200 text-blue-600 font-semibold active:bg-blue-50 active:scale-95 transition shadow-lg flex items-center justify-center gap-2">
@@ -2037,6 +2060,7 @@
                         <div className={`mb-4 p-4 rounded-2xl sticky top-0 z-40 ${spendingStatus === 'safe' ? 'bg-green-100 border-2 border-green-300' :
                             spendingStatus === 'caution' ? 'bg-yellow-100 border-2 border-yellow-300' :
                                 'bg-red-100 border-2 border-red-300'
+
                             }`}>
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
@@ -2076,11 +2100,20 @@
                                                 {view === 'dashboard' && 'Home'}
                                                 {view === 'loans' && 'Loans'}
                                                 {view === 'advice' && 'Advice'}
+
+
                                             </div>
 
                                         </div>
                                     </div>
                                 </div>
+                                <button
+                                    onClick={hardReset}
+                                    className="text-[10px] text-gray-400 underline mt-1"
+                                >
+                                    Reset all data
+                                </button>
+
                                 <button onClick={() => setShowLanding(true)}
                                     className="w-16 h-16 rounded-2xl bg-white shadow-lg active:scale-95 transition border-2 border-purple-200 p-1">
                                     <KombuchaBottle mood={getAvatarMood()} isHovering={false} isPetting={false} />
@@ -2214,94 +2247,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    {selectedExpense && (
-                                        <div
-                                            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-                                            onClick={() => {
-                                                setSelectedExpense(null);
-                                                setEditExpense(null);
-                                            }}
-                                        >
-                                            <div
-                                                className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl"
-                                                onClick={(e) => e.stopPropagation()}
-                                            >
-                                                <h3 className="text-xl font-bold mb-4">Edit Log</h3>
 
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                    Amount
-                                                </label>
-                                                <input
-                                                    type="number"
-                                                    value={editExpense.amount}
-                                                    onChange={(e) =>
-                                                        setEditExpense({ ...editExpense, amount: Number(e.target.value) })
-                                                    }
-                                                    className="w-full p-3 rounded-xl border-2 border-gray-200 mb-3"
-                                                />
-
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                    Description
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    value={editExpense.description}
-                                                    onChange={(e) =>
-                                                        setEditExpense({ ...editExpense, description: e.target.value })
-                                                    }
-                                                    className="w-full p-3 rounded-xl border-2 border-gray-200 mb-3"
-                                                />
-
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                    Category
-                                                </label>
-                                                <select
-                                                    value={editExpense.category}
-                                                    onChange={(e) =>
-                                                        setEditExpense({ ...editExpense, category: e.target.value })
-                                                    }
-                                                    className="w-full p-3 rounded-xl border-2 border-gray-200 mb-4"
-                                                >
-                                                    <option value="food">🍔 Food</option>
-                                                    <option value="transport">🚗 Transport</option>
-                                                    <option value="housing">🏠 Housing</option>
-                                                    <option value="utilities">⚡ Utilities</option>
-                                                    <option value="entertainment">🎮 Entertainment</option>
-                                                    <option value="other">📦 Other</option>
-                                                </select>
-
-                                                <div className="flex gap-2">
-                                                    <button
-                                                        onClick={() => {
-                                                            setExpenses(prev =>
-                                                                prev.map(e => (e.id === editExpense.id ? editExpense : e))
-                                                            );
-                                                            setSelectedExpense(null);
-                                                            setEditExpense(null);
-                                                        }}
-                                                        className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold active:scale-95"
-                                                    >
-                                                        Save
-                                                    </button>
-
-                                                    <button
-                                                        onClick={() => {
-                                                            if (confirm('Delete this log?')) {
-                                                                setExpenses(prev =>
-                                                                    prev.filter(e => e.id !== selectedExpense.id)
-                                                                );
-                                                                setSelectedExpense(null);
-                                                                setEditExpense(null);
-                                                            }
-                                                        }}
-                                                        className="flex-1 py-3 bg-red-100 text-red-600 rounded-xl font-semibold active:scale-95"
-                                                    >
-                                                        Delete
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
                                     <button onClick={addLoan}
                                         className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold active:from-purple-600 active:to-pink-600 active:scale-95 transition">
                                         Add Loan
@@ -2309,7 +2255,94 @@
                                 </div>
                             </div>
                         )}
+                        {selectedExpense && (
+                            <div
+                                className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+                                onClick={() => {
+                                    setSelectedExpense(null);
+                                    setEditExpense(null);
+                                }}
+                            >
+                                <div
+                                    className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl"
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    <h3 className="text-xl font-bold mb-4">Edit Log</h3>
 
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Amount
+                                    </label>
+                                    <input
+                                        type="number"
+                                        value={editExpense.amount}
+                                        onChange={(e) =>
+                                            setEditExpense({ ...editExpense, amount: Number(e.target.value) })
+                                        }
+                                        className="w-full p-3 rounded-xl border-2 border-gray-200 mb-3"
+                                    />
+
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Description
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={editExpense.description}
+                                        onChange={(e) =>
+                                            setEditExpense({ ...editExpense, description: e.target.value })
+                                        }
+                                        className="w-full p-3 rounded-xl border-2 border-gray-200 mb-3"
+                                    />
+
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Category
+                                    </label>
+                                    <select
+                                        value={editExpense.category}
+                                        onChange={(e) =>
+                                            setEditExpense({ ...editExpense, category: e.target.value })
+                                        }
+                                        className="w-full p-3 rounded-xl border-2 border-gray-200 mb-4"
+                                    >
+                                        <option value="food">🍔 Food</option>
+                                        <option value="transport">🚗 Transport</option>
+                                        <option value="housing">🏠 Housing</option>
+                                        <option value="utilities">⚡ Utilities</option>
+                                        <option value="entertainment">🎮 Entertainment</option>
+                                        <option value="other">📦 Other</option>
+                                    </select>
+
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => {
+                                                setExpenses(prev =>
+                                                    prev.map(e => (e.id === editExpense.id ? editExpense : e))
+                                                );
+                                                setSelectedExpense(null);
+                                                setEditExpense(null);
+                                            }}
+                                            className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold active:scale-95"
+                                        >
+                                            Save
+                                        </button>
+
+                                        <button
+                                            onClick={() => {
+                                                if (confirm('Delete this log?')) {
+                                                    setExpenses(prev =>
+                                                        prev.filter(e => e.id !== selectedExpense.id)
+                                                    );
+                                                    setSelectedExpense(null);
+                                                    setEditExpense(null);
+                                                }
+                                            }}
+                                            className="flex-1 py-3 bg-red-100 text-red-600 rounded-xl font-semibold active:scale-95"
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                         <div className="flex gap-2 mb-6 overflow-x-auto pb-2 -mx-4 px-4">
                             <button
                                 onClick={() => {
@@ -2338,6 +2371,7 @@
                         {view === 'dashboard' && (
                             <div className="space-y-4">
                                 <div className="grid grid-cols-2 gap-3">
+                                    onClick={() => setView('logs')}
                                     <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-green-100 active:scale-95 transition">
                                         <div className="flex items-center justify-between mb-2">
                                             <span className="text-gray-600 font-medium text-sm">Income</span>
@@ -2346,6 +2380,7 @@
                                         <div className="text-2xl font-bold text-green-600">${income.toLocaleString()}</div>
                                     </div>
 
+                                    onClick={() => setView('logs')}
                                     <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-red-100 active:scale-95 transition">
                                         <div className="flex items-center justify-between mb-2">
                                             <span className="text-gray-600 font-medium text-sm">Expenses</span>
@@ -2354,6 +2389,7 @@
                                         <div className="text-2xl font-bold text-red-600">${totalExpenses.toLocaleString()}</div>
                                     </div>
 
+                                    onClick={() => setView('logs')}
                                     <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-blue-100 active:scale-95 transition">
                                         <div className="flex items-center justify-between mb-2">
                                             <span className="text-gray-600 font-medium text-sm">Monthly Net</span>
@@ -2362,6 +2398,7 @@
                                         <div className={`text-2xl font-bold ${monthlyNet >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>${monthlyNet.toLocaleString()}</div>
                                     </div>
 
+                                    onClick={() => setView('logs')}
                                     <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-purple-100 active:scale-95 transition">
                                         <div className="flex items-center justify-between mb-2">
                                             <span className="text-gray-600 font-medium text-sm">Savings</span>
@@ -2430,10 +2467,22 @@
                                     </div>
 
                                 </div>
+                                {decisionAdvice && (
+                                    <div className="mt-3 text-sm font-semibold text-purple-600">
+                                        💬 {decisionAdvice}
+                                    </div>
+                                )}
 
                                 {expenses.length > 0 && (
                                     <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-gray-100">
                                         <h3 className="text-lg font-bold mb-3 text-gray-800">Recent Activity</h3>
+                                        <button
+                                            onClick={() => setView('logs')}
+                                            className="text-sm text-purple-600 font-semibold mb-2 active:underline"
+                                        >
+                                            View all logs →
+                                        </button>
+
                                         <div className="space-y-2">
                                             {expenses.slice().reverse().slice(0, 5).map((expense) => {
                                                 const colors = categoryColors[expense.category];
@@ -2537,6 +2586,33 @@
                                         </div>
                                     )}
                                 </div>
+                            </div>
+                        )}
+                        {view === 'logs' && (
+                            <div className="space-y-3">
+                                <h3 className="text-xl font-bold text-gray-800 mb-2">All Logs</h3>
+
+                                {expenses.slice().reverse().map(expense => {
+                                    const colors = categoryColors[expense.category];
+                                    return (
+                                        <div
+                                            key={expense.id}
+                                            onClick={() => {
+                                                setSelectedExpense(expense);
+                                                setEditExpense({ ...expense });
+                                            }}
+                                            className={`p-4 rounded-xl border-2 ${colors.border} ${colors.bg} cursor-pointer active:scale-95 transition`}
+                                        >
+                                            <div className="flex justify-between items-center">
+                                                <span className="font-medium truncate">{expense.description}</span>
+                                                <span className="font-bold">${expense.amount}</span>
+                                            </div>
+                                            <div className="text-xs text-gray-500 mt-1">
+                                                {new Date(expense.date).toLocaleDateString()}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         )}
 
