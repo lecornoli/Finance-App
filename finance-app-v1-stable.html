@@ -1,0 +1,2448 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Finance">
+    <meta name="theme-color" content="#9333EA">
+    <title>Finance Tracker</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&family=Nunito:wght@300;400;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #faf5ff 0%, #fce7f3 50%, #eff6ff 100%);
+            min-height: 100vh;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            overscroll-behavior-y: contain;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        input,
+        select {
+            font-size: 16px !important;
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Tailwind-like utilities */
+        .min-h-screen {
+            min-height: 100vh;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .flex-1 {
+            flex: 1;
+        }
+
+        .flex-col {
+            flex-direction: column;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .items-start {
+            align-items: flex-start;
+        }
+
+        .justify-center {
+            justify-content: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .gap-2 {
+            gap: 0.5rem;
+        }
+
+        .gap-3 {
+            gap: 0.75rem;
+        }
+
+        .gap-4 {
+            gap: 1rem;
+        }
+
+        .grid {
+            display: grid;
+        }
+
+        .grid-cols-1 {
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+        }
+
+        .grid-cols-2 {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .grid-cols-3 {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .space-y-2>*+* {
+            margin-top: 0.5rem;
+        }
+
+        .space-y-3>*+* {
+            margin-top: 0.75rem;
+        }
+
+        .space-y-4>*+* {
+            margin-top: 1rem;
+        }
+
+        .space-y-6>*+* {
+            margin-top: 1.5rem;
+        }
+
+        .p-1 {
+            padding: 0.25rem;
+        }
+
+        .p-2 {
+            padding: 0.5rem;
+        }
+
+        .p-3 {
+            padding: 0.75rem;
+        }
+
+        .p-4 {
+            padding: 1rem;
+        }
+
+        .p-6 {
+            padding: 1.5rem;
+        }
+
+        .p-8 {
+            padding: 2rem;
+        }
+
+        .px-2 {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+
+        .px-3 {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+
+        .px-4 {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .px-6 {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+
+        .px-8 {
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+
+        .py-2 {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        .py-3 {
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+        }
+
+        .py-4 {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        .py-5 {
+            padding-top: 1.25rem;
+            padding-bottom: 1.25rem;
+        }
+
+        .m-0 {
+            margin: 0;
+        }
+
+        .mx-auto {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .mb-1 {
+            margin-bottom: 0.25rem;
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .mb-3 {
+            margin-bottom: 0.75rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem;
+        }
+
+        .mb-8 {
+            margin-bottom: 2rem;
+        }
+
+        .mt-1 {
+            margin-top: 0.25rem;
+        }
+
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+
+        .mt-4 {
+            margin-top: 1rem;
+        }
+
+        .mt-6 {
+            margin-top: 1.5rem;
+        }
+
+        .-mx-4 {
+            margin-left: -1rem;
+            margin-right: -1rem;
+        }
+
+        .w-4 {
+            width: 1rem;
+        }
+
+        .w-5 {
+            width: 1.25rem;
+        }
+
+        .w-6 {
+            width: 1.5rem;
+        }
+
+        .w-8 {
+            width: 2rem;
+        }
+
+        .w-14 {
+            width: 3.5rem;
+        }
+
+        .w-16 {
+            width: 4rem;
+        }
+
+        .w-20 {
+            width: 5rem;
+        }
+
+        .w-64 {
+            width: 16rem;
+        }
+
+        .w-full {
+            width: 100%;
+        }
+
+        .max-w-md {
+            max-width: 28rem;
+        }
+
+        .max-w-2xl {
+            max-width: 42rem;
+        }
+
+        .max-w-6xl {
+            max-width: 72rem;
+        }
+
+        .max-w-90vh {
+            max-height: 90vh;
+        }
+
+        .max-h-90vh {
+            max-height: 90vh;
+        }
+
+        .h-2 {
+            height: 0.5rem;
+        }
+
+        .h-4 {
+            width: 1rem;
+        }
+
+        .h-5 {
+            height: 1.25rem;
+        }
+
+        .h-6 {
+            height: 1.5rem;
+        }
+
+        .h-8 {
+            height: 2rem;
+        }
+
+        .h-14 {
+            height: 3.5rem;
+        }
+
+        .h-16 {
+            height: 4rem;
+        }
+
+        .h-20 {
+            height: 5rem;
+        }
+
+        .h-64 {
+            height: 16rem;
+        }
+
+        .h-full {
+            height: 100%;
+        }
+
+        .min-w-0 {
+            min-width: 0;
+        }
+
+        .text-xs {
+            font-size: 0.75rem;
+            line-height: 1rem;
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+        }
+
+        .text-base {
+            font-size: 1rem;
+            line-height: 1.5rem;
+        }
+
+        .text-lg {
+            font-size: 1.125rem;
+            line-height: 1.75rem;
+        }
+
+        .text-xl {
+            font-size: 1.25rem;
+            line-height: 1.75rem;
+        }
+
+        .text-2xl {
+            font-size: 1.5rem;
+            line-height: 2rem;
+        }
+
+        .text-3xl {
+            font-size: 1.875rem;
+            line-height: 2.25rem;
+        }
+
+        .text-4xl {
+            font-size: 2.25rem;
+            line-height: 2.5rem;
+        }
+
+        .text-5xl {
+            font-size: 3rem;
+            line-height: 1;
+        }
+
+        .font-medium {
+            font-weight: 500;
+        }
+
+        .font-semibold {
+            font-weight: 600;
+        }
+
+        .font-bold {
+            font-weight: 700;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+
+        .truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .whitespace-nowrap {
+            white-space: nowrap;
+        }
+
+        .text-white {
+            color: #ffffff;
+        }
+
+        .text-gray-400 {
+            color: #9ca3af;
+        }
+
+        .text-gray-500 {
+            color: #6b7280;
+        }
+
+        .text-gray-600 {
+            color: #4b5563;
+        }
+
+        .text-gray-700 {
+            color: #374151;
+        }
+
+        .text-gray-800 {
+            color: #1f2937;
+        }
+
+        .text-purple-600 {
+            color: #9333ea;
+        }
+
+        .text-purple-100 {
+            color: #f3e8ff;
+        }
+
+        .text-blue-600 {
+            color: #2563eb;
+        }
+
+        .text-blue-700 {
+            color: #1d4ed8;
+        }
+
+        .text-green-600 {
+            color: #16a34a;
+        }
+
+        .text-green-700 {
+            color: #15803d;
+        }
+
+        .text-red-500 {
+            color: #ef4444;
+        }
+
+        .text-red-600 {
+            color: #dc2626;
+        }
+
+        .text-red-700 {
+            color: #b91c1c;
+        }
+
+        .text-orange-600 {
+            color: #ea580c;
+        }
+
+        .text-yellow-600 {
+            color: #ca8a04;
+        }
+
+        .text-yellow-700 {
+            color: #a16207;
+        }
+
+        .bg-white {
+            background-color: #ffffff;
+        }
+
+        .bg-gray-100 {
+            background-color: #f3f4f6;
+        }
+
+        .bg-gray-200 {
+            background-color: #e5e7eb;
+        }
+
+        .bg-purple-50 {
+            background-color: #faf5ff;
+        }
+
+        .bg-purple-100 {
+            background-color: #f3e8ff;
+        }
+
+        .bg-blue-50 {
+            background-color: #eff6ff;
+        }
+
+        .bg-blue-100 {
+            background-color: #dbeafe;
+        }
+
+        .bg-green-100 {
+            background-color: #dcfce7;
+        }
+
+        .bg-red-100 {
+            background-color: #fee2e2;
+        }
+
+        .bg-yellow-100 {
+            background-color: #fef3c7;
+        }
+
+        .bg-orange-100 {
+            background-color: #ffedd5;
+        }
+
+        .bg-pink-100 {
+            background-color: #fce7f3;
+        }
+
+        .bg-gradient-purple {
+            background: linear-gradient(135deg, #9333ea, #ec4899);
+        }
+
+        .bg-gradient-blue {
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+        }
+
+        .bg-gradient-yellow {
+            background: linear-gradient(to right, #fef3c7, #fed7aa);
+        }
+
+        .border {
+            border-width: 1px;
+        }
+
+        .border-2 {
+            border-width: 2px;
+        }
+
+        .border-gray-100 {
+            border-color: #f3f4f6;
+        }
+
+        .border-gray-200 {
+            border-color: #e5e7eb;
+        }
+
+        .border-purple-100 {
+            border-color: #f3e8ff;
+        }
+
+        .border-purple-200 {
+            border-color: #e9d5ff;
+        }
+
+        .border-purple-300 {
+            border-color: #d8b4fe;
+        }
+
+        .border-blue-200 {
+            border-color: #bfdbfe;
+        }
+
+        .border-blue-300 {
+            border-color: #93c5fd;
+        }
+
+        .border-green-200 {
+            border-color: #bbf7d0;
+        }
+
+        .border-green-300 {
+            border-color: #86efac;
+        }
+
+        .border-yellow-200 {
+            border-color: #fde68a;
+        }
+
+        .border-red-200 {
+            border-color: #fecaca;
+        }
+
+        .border-orange-200 {
+            border-color: #fed7aa;
+        }
+
+        .rounded-xl {
+            border-radius: 0.75rem;
+        }
+
+        .rounded-2xl {
+            border-radius: 1rem;
+        }
+
+        .rounded-3xl {
+            border-radius: 1.5rem;
+        }
+
+        .rounded-full {
+            border-radius: 9999px;
+        }
+
+        .rounded-lg {
+            border-radius: 0.5rem;
+        }
+
+        .shadow-sm {
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .shadow-lg {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .shadow-xl {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .shadow-2xl {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .cursor-pointer {
+            cursor: pointer;
+        }
+
+        .overflow-hidden {
+            overflow: hidden;
+        }
+
+        .overflow-x-auto {
+            overflow-x: auto;
+        }
+
+        .overflow-y-auto {
+            overflow-y: auto;
+        }
+
+        .relative {
+            position: relative;
+        }
+
+        .absolute {
+            position: absolute;
+        }
+
+        .fixed {
+            position: fixed;
+        }
+
+        .inset-0 {
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        .top-0 {
+            top: 0;
+        }
+
+        .left-1-2 {
+            left: 50%;
+        }
+
+        .-translate-x-1-2 {
+            transform: translateX(-50%);
+        }
+
+        .z-10 {
+            z-index: 10;
+        }
+
+        .z-20 {
+            z-index: 20;
+        }
+
+        .z-40 {
+            z-index: 40;
+        }
+
+        .z-50 {
+            z-index: 50;
+        }
+
+        .transition {
+            transition-property: all;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 150ms;
+        }
+
+        .transition-all {
+            transition-property: all;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 150ms;
+        }
+
+        .transition-transform {
+            transition-property: transform;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 300ms;
+        }
+
+        .duration-300 {
+            transition-duration: 300ms;
+        }
+
+        .duration-500 {
+            transition-duration: 500ms;
+        }
+
+        .ease-out {
+            transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+        }
+
+        .opacity-0 {
+            opacity: 0;
+        }
+
+        .opacity-10 {
+            opacity: 0.1;
+        }
+
+        .opacity-30 {
+            opacity: 0.3;
+        }
+
+        .opacity-40 {
+            opacity: 0.4;
+        }
+
+        .opacity-60 {
+            opacity: 0.6;
+        }
+
+        .opacity-70 {
+            opacity: 0.7;
+        }
+
+        .opacity-80 {
+            opacity: 0.8;
+        }
+
+        .backdrop-blur-sm {
+            backdrop-filter: blur(4px);
+        }
+
+        .backdrop-blur-lg {
+            backdrop-filter: blur(16px);
+        }
+
+        .pointer-events-none {
+            pointer-events: none;
+        }
+
+        .active\:scale-95:active {
+            transform: scale(0.95);
+        }
+
+        .active\:bg-gray-100:active {
+            background-color: #f3f4f6;
+        }
+
+        .active\:bg-purple-50:active {
+            background-color: #faf5ff;
+        }
+
+        .active\:bg-purple-100:active {
+            background-color: #f3e8ff;
+        }
+
+        .active\:bg-blue-50:active {
+            background-color: #eff6ff;
+        }
+
+        .active\:text-gray-600:active {
+            color: #4b5563;
+        }
+
+        .active\:text-purple-600:active {
+            color: #9333ea;
+        }
+
+        .active\:text-red-700:active {
+            color: #b91c1c;
+        }
+
+        .active\:scale-110:active {
+            transform: scale(1.1);
+        }
+
+        .active\:from-purple-600:active {
+            --tw-gradient-from: #9333ea;
+        }
+
+        .active\:to-pink-600:active {
+            --tw-gradient-to: #db2777;
+        }
+
+        .bg-white\/50 {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .bg-white\/80 {
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+
+        .bg-white\/20 {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .bg-black\/50 {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .border-white\/50 {
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .sticky {
+            position: sticky;
+        }
+
+        .pb-2 {
+            padding-bottom: 0.5rem;
+        }
+
+        .pb-20 {
+            padding-bottom: 5rem;
+        }
+
+        .inline-block {
+            display: inline-block;
+        }
+
+        .inline {
+            display: inline;
+        }
+
+        .leading-relaxed {
+            line-height: 1.625;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .pulse-animation {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes floatHearts {
+            0% {
+                transform: translateY(0) scale(0);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .heart-float {
+            animation: floatHearts 2s ease-out forwards;
+        }
+
+        /* Custom gradients */
+        .from-purple-400 {
+            --tw-gradient-from: #c084fc;
+        }
+
+        .to-pink-400 {
+            --tw-gradient-to: #f472b6;
+        }
+
+        .from-purple-500 {
+            --tw-gradient-from: #a855f7;
+        }
+
+        .to-pink-500 {
+            --tw-gradient-to: #ec4899;
+        }
+
+        .from-yellow-100 {
+            --tw-gradient-from: #fef3c7;
+        }
+
+        .to-orange-100 {
+            --tw-gradient-to: #ffedd5;
+        }
+
+        .bg-gradient-to-r {
+            background-image: linear-gradient(to right, var(--tw-gradient-from), var(--tw-gradient-to));
+        }
+
+        .bg-gradient-to-br {
+            background-image: linear-gradient(to bottom right, var(--tw-gradient-from), var(--tw-gradient-to));
+        }
+
+        @media (min-width: 768px) {
+            .md\:grid-cols-2 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .md\:grid-cols-4 {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+
+            .md\:p-8 {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script>
+        // Mock window.storage
+        if (!window.storage) {
+            window.storage = {
+                async get(key) {
+                    const value = localStorage.getItem(key);
+                    return value ? { key, value, shared: false } : null;
+                },
+                async set(key, value, shared = false) {
+                    localStorage.setItem(key, value);
+                    return { key, value, shared };
+                },
+                async delete(key) {
+                    localStorage.removeItem(key);
+                    return { key, deleted: true };
+                },
+                async list(prefix) {
+                    const keys = Object.keys(localStorage).filter(k => !prefix || k.startsWith(prefix));
+                    return { keys };
+                }
+            };
+        }
+    </script>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        // 🔧 Emoji-based icon shims (lucide-react replacement)
+        const Sparkles = ({ className }) => <Icon className={className}>✨</Icon>;
+        const Heart = ({ className }) => <span className={className}>❤️</span>;
+        const Zap = () => <span>⚡</span>;
+        const ArrowRight = () => <span>→</span>;
+        const ChevronRight = () => <span>›</span>;
+        const Star = () => <span>⭐</span>;
+        const Brain = () => <span>🧠</span>;
+        const AlertTriangle = () => <span>⚠️</span>;
+        const CheckCircle = () => <span>✅</span>;
+        const Info = () => <span>ℹ️</span>;
+        const Plus = () => <span>➕</span>;
+        const Edit2 = () => <span>✏️</span>;
+        const X = () => <span>✖</span>;
+        const TrendingUp = () => <span>📈</span>;
+        const DollarSign = () => <span>$</span>;
+        const Target = () => <span>🎯</span>;
+        const Lightbulb = () => <span>💡</span>;
+        const Coffee = () => <span>☕</span>;
+        const Icon = ({ children, className = "" }) => (
+            <span
+                className={className}
+                style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    lineHeight: 1
+                }}
+            >
+                {children}
+            </span>
+        );
+
+        // 🔊 Sound Engine
+        const sounds = {
+            tap: new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3'),
+            success: new Audio('https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3'),
+            pop: new Audio('https://assets.mixkit.co/active_storage/sfx/270/270-preview.mp3'),
+            whoosh: new Audio('https://assets.mixkit.co/active_storage/sfx/1143/1143-preview.mp3'),
+            warn: new Audio('https://assets.mixkit.co/active_storage/sfx/1466/1466-preview.mp3')
+        };
+
+        // Normalize volume (important)
+        Object.values(sounds).forEach(sound => {
+            sound.volume = 0.25;
+        });
+
+        const FinanceApp = () => {
+            const [soundEnabled, setSoundEnabled] = useState(true);
+            const [isFirstTime, setIsFirstTime] = useState(true);
+            const [onboardingStep, setOnboardingStep] = useState(0);
+            const [showLanding, setShowLanding] = useState(true);
+            const [expenses, setExpenses] = useState([]);
+            const [income, setIncome] = useState(0);
+            const [savings, setSavings] = useState(0);
+            const [bankBalance, setBankBalance] = useState(0);
+            const [creditCardDebt, setCreditCardDebt] = useState(0);
+            const [creditCardAPR, setCreditCardAPR] = useState(18);
+            const [loans, setLoans] = useState([]);
+            const [userName, setUserName] = useState('');
+            const [view, setView] = useState('dashboard');
+            const [userInteraction, setUserInteraction] = useState(0);
+            const [isHovering, setIsHovering] = useState(false);
+            const [isPetting, setIsPetting] = useState(false);
+            const [showHearts, setShowHearts] = useState(false);
+            const [canProceed, setCanProceed] = useState(false);
+            const [showQuickAdd, setShowQuickAdd] = useState(false);
+            const [showLoanModal, setShowLoanModal] = useState(false);
+            const [decisionAmount, setDecisionAmount] = useState('');
+
+            const playSound = (name) => {
+                if (!soundEnabled) return;
+
+                const sound = sounds[name];
+                if (!sound) return;
+
+                sound.pause();
+                sound.currentTime = 0;
+                sound.play().catch(() => { });
+            };
+
+            // New loan form
+            const [newLoan, setNewLoan] = useState({
+                name: '',
+                amount: '',
+                apr: '',
+                termMonths: '',
+                monthlyPayment: '',
+                purpose: 'other' // debt-consolidation, emergency-buffer, other
+            });
+
+            // Smart tracking state
+            const [weeklyEstimate, setWeeklyEstimate] = useState('');
+            const [userPatterns, setUserPatterns] = useState({
+                avgWeeklySmallExpenses: 0,
+                commonCategories: {},
+                lastLoggedDate: null,
+                consecutiveWeeks: 0,
+                estimationAccuracy: 100
+            });
+
+            useEffect(() => {
+                const loadData = async () => {
+                    try {
+                        const onboardingComplete = await window.storage.get('onboarding-complete');
+                        const userData = await window.storage.get('user-data');
+                        const expensesData = await window.storage.get('expenses');
+                        const patternsData = await window.storage.get('user-patterns');
+                        const loansData = await window.storage.get('loans');
+
+                        if (onboardingComplete && onboardingComplete.value === 'true') {
+                            setIsFirstTime(false);
+                        }
+
+                        if (userData) {
+                            const data = JSON.parse(userData.value);
+                            setUserName(data.userName || '');
+                            setIncome(data.income || 0);
+                            setSavings(data.savings || 0);
+                            setBankBalance(data.bankBalance || 0);
+                            setCreditCardDebt(data.creditCardDebt || 0);
+                            setCreditCardAPR(data.creditCardAPR || 18);
+                        }
+
+                        if (expensesData) setExpenses(JSON.parse(expensesData.value));
+                        if (patternsData) setUserPatterns(JSON.parse(patternsData.value));
+                        if (loansData) setLoans(JSON.parse(loansData.value));
+                    } catch (error) {
+                        console.log('Starting fresh');
+                    }
+                };
+                loadData();
+            }, []);
+
+            useEffect(() => {
+                switch (onboardingStep) {
+                    case 0: setCanProceed(userName.trim().length > 0); break;
+                    case 1: setCanProceed(income > 0); break;
+                    case 2: setCanProceed(bankBalance >= 0); break;
+                    case 3: setCanProceed(creditCardDebt >= 0); break;
+                    case 4: setCanProceed(true); break; // Skip loans in onboarding
+                    case 5: setCanProceed(savings >= 0); break;
+                    default: setCanProceed(false);
+                }
+            }, [onboardingStep, userName, income, bankBalance, creditCardDebt, savings]);
+
+            const saveUserData = async () => {
+                try {
+                    await window.storage.set('user-data', JSON.stringify({
+                        userName, income, savings, bankBalance, creditCardDebt, creditCardAPR
+                    }));
+                    await window.storage.set('onboarding-complete', 'true');
+                } catch (error) {
+                    console.error('Error saving:', error);
+                }
+            };
+
+            const saveExpenses = async () => {
+                try {
+                    await window.storage.set('expenses', JSON.stringify(expenses));
+                } catch (error) {
+                    console.error('Error saving expenses:', error);
+                }
+            };
+
+            const savePatterns = async () => {
+                try {
+                    await window.storage.set('user-patterns', JSON.stringify(userPatterns));
+                } catch (error) {
+                    console.error('Error saving patterns:', error);
+                }
+            };
+
+            const saveLoans = async () => {
+                try {
+                    await window.storage.set('loans', JSON.stringify(loans));
+                } catch (error) {
+                    console.error('Error saving loans:', error);
+                }
+            };
+
+            useEffect(() => {
+                if (expenses.length > 0) {
+                    saveExpenses();
+                    updateUserPatterns();
+                }
+            }, [expenses]);
+
+            useEffect(() => { savePatterns(); }, [userPatterns]);
+            useEffect(() => { saveLoans(); }, [loans]);
+
+            const completeOnboarding = () => {
+                saveUserData();
+                setIsFirstTime(false);
+            };
+
+            const handleNext = () => {
+                if (!canProceed) return;
+
+                // soft tap sound for every step
+                playSound('tap');
+
+                if (onboardingStep < 5) {
+                    setOnboardingStep(prev => prev + 1);
+                } else {
+                    // warm completion sound
+                    playSound('success');
+                    completeOnboarding();
+                }
+            };
+
+
+            useEffect(() => {
+                const handleKeyDown = (e) => {
+                    if (e.key === 'Enter' && canProceed && isFirstTime) {
+                        handleNext();
+                    }
+                };
+                window.addEventListener('keydown', handleKeyDown);
+                return () => window.removeEventListener('keydown', handleKeyDown);
+            }, [canProceed, isFirstTime]);
+
+
+            const addWeeklyEstimate = () => {
+                if (!weeklyEstimate) return;
+                const estimate = {
+                    amount: parseFloat(weeklyEstimate),
+                    description: 'Weekly small expenses (estimated)',
+                    category: 'other',
+                    type: 'estimate',
+                    id: Date.now(),
+                    date: new Date().toISOString()
+                };
+                playSound('success');
+                setExpenses([...expenses, estimate]);
+                setWeeklyEstimate('');
+                setShowQuickAdd(false);
+            };
+
+            const quickAddPreset = (description, estimatedAmount, category) => {
+                const expense = {
+                    amount: estimatedAmount,
+                    description,
+                    category,
+                    type: 'quick',
+                    id: Date.now(),
+                    date: new Date().toISOString()
+                };
+                playSound('success');
+                setExpenses([...expenses, expense]);
+            };
+
+            const addLoan = () => {
+                if (!newLoan.name || !newLoan.amount || !newLoan.monthlyPayment) return;
+
+                const loan = {
+                    id: Date.now(),
+                    name: newLoan.name,
+                    amount: parseFloat(newLoan.amount),
+                    apr: parseFloat(newLoan.apr) || 0,
+                    termMonths: parseInt(newLoan.termMonths) || 36,
+                    monthlyPayment: parseFloat(newLoan.monthlyPayment),
+                    purpose: newLoan.purpose,
+                    createdAt: new Date().toISOString()
+                };
+                playSound('success');
+                setLoans([...loans, loan]);
+                setNewLoan({ name: '', amount: '', apr: '', termMonths: '', monthlyPayment: '', purpose: 'other' });
+                setShowLoanModal(false);
+            };
+
+            const deleteLoan = (id) => {
+                setLoans(loans.filter(l => l.id !== id));
+            };
+
+            const updateUserPatterns = () => {
+                const weeklySmallExpenses = expenses
+                    .filter(e => e.type === 'estimate')
+                    .reduce((sum, e) => sum + e.amount, 0) / Math.max(1, expenses.filter(e => e.type === 'estimate').length);
+
+                const categoryCount = {};
+                expenses.forEach(e => {
+                    categoryCount[e.category] = (categoryCount[e.category] || 0) + 1;
+                });
+
+                setUserPatterns({
+                    avgWeeklySmallExpenses: weeklySmallExpenses || 0,
+                    commonCategories: categoryCount,
+                    lastLoggedDate: new Date().toISOString(),
+                    consecutiveWeeks: userPatterns.consecutiveWeeks + 1,
+                    estimationAccuracy: Math.min(100, 90 + userPatterns.consecutiveWeeks * 2)
+                });
+            };
+
+            const deleteExpense = (id) => {
+                setExpenses(expenses.filter(e => e.id !== id));
+            };
+
+            // Calculations
+            const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+            const totalLoanPayments = loans.reduce((sum, l) => sum + l.monthlyPayment, 0);
+            const ccMinPayment = creditCardDebt > 0 ? Math.max(creditCardDebt * 0.02, 25) : 0;
+            const totalDebtPayments = totalLoanPayments + ccMinPayment;
+            const monthlyNet = income - totalExpenses;
+            const safeToSpend = Math.round(
+                (monthlyNet || 0) - (totalDebtPayments || 0)
+            );
+            const totalDebt = creditCardDebt + loans.reduce((sum, l) => sum + l.amount, 0);
+            const netWorth = bankBalance + savings - totalDebt;
+            const savingsRate = income > 0 ? (monthlyNet / income) * 100 : 0;
+
+            const spendingStatus = safeToSpend > income * 0.2 ? 'safe' : safeToSpend > 0 ? 'caution' : 'overspent';
+            // 🧠 Wealth Context Engine
+            const getWealthContext = () => {
+                const dailyRunway = income > 0 ? Math.floor((bankBalance + savings) / (income / 30)) : 0;
+                const monthsRunway = income > 0 ? ((bankBalance + savings) / income).toFixed(1) : 0;
+
+                const opportunityCost = (amount) => {
+                    if (income <= 0) return null;
+                    const days = Math.round(amount / (income / 30));
+                    return days;
+                };
+
+                const burnRate = income - monthlyNet;
+                const bufferTarget = income * 3;
+                const bufferProgress = bufferTarget > 0 ? Math.min(100, Math.round(((bankBalance + savings) / bufferTarget) * 100)) : 0;
+
+                return {
+                    dailyRunway,
+                    monthsRunway,
+                    opportunityCost,
+                    burnRate,
+                    bufferTarget,
+                    bufferProgress
+                };
+            };
+
+            const wealth = getWealthContext();
+            // 🌱 Wealth Phase Engine
+            const getWealthPhase = () => {
+                if (wealth.monthsRunway < 2) return 'survive';
+                if (wealth.bufferProgress < 100) return 'stabilize';
+                return 'scale';
+            };
+
+            const wealthPhase = getWealthPhase();
+
+            // 🧮 Decision Simulator Logic
+            const simulateDecision = (amount) => {
+                if (!amount || amount <= 0 || income <= 0) return null;
+
+                const dailyIncome = Math.max(1, (income - totalExpenses) / 30);
+                const daysLost = Math.round(amount / dailyIncome);
+
+                const newBufferProgress = Math.min(
+                    100,
+                    Math.round(((bankBalance + savings - amount) / wealth.bufferTarget) * 100)
+                );
+
+                return {
+                    daysLost,
+                    weakensBuffer: newBufferProgress < wealth.bufferProgress,
+                    newBufferProgress
+                };
+            };
+
+            const decisionImpact = simulateDecision(Number(decisionAmount));
+
+            // Smart, personalized advice based on user behavior
+            const getPersonalizedAdvice = () => {
+                const adviceList = [];
+                // Phase-based tone priming
+                const phasePreface =
+                    wealthPhase === 'survive'
+                        ? 'Right now, the goal is stability. '
+                        : wealthPhase === 'stabilize'
+                            ? 'You’re building momentum. '
+                            : 'You’re in a position to think strategically. ';
+
+                // Opportunity cost framing
+                if (expenses.length > 0) {
+                    const lastExpense = expenses[expenses.length - 1];
+                    const daysLost = wealth.opportunityCost(lastExpense.amount);
+
+                    if (daysLost && daysLost >= 1) {
+                        adviceList.push({
+                            emoji: '⏳',
+                            text: `${phasePreface}That RM${lastExpense.amount} cost you about ${daysLost} days of financial runway.`,
+                            tone: 'reflection'
+                        });
+                    }
+                }
+                // Spending patterns
+                if (expenses.length > 0) {
+                    const foodExpenses = expenses.filter(e => e.category === 'food').reduce((sum, e) => sum + e.amount, 0);
+                    if (foodExpenses > income * 0.15) {
+                        adviceList.push({
+                            emoji: '🍔',
+                            text: `You're spending ${((foodExpenses / income) * 100).toFixed(0)}% on food. Try meal prepping on Sundays?`,
+                            tone: 'suggestion'
+                        });
+                    }
+                }
+
+                // Debt strategy
+                if (creditCardDebt > 0 && loans.length === 0) {
+                    const ccInterest = (creditCardDebt * (creditCardAPR / 100)) / 12;
+                    adviceList.push({
+                        emoji: '💡',
+                        text: `CC costing you $${ccInterest.toFixed(0)}/mo in interest. A lower-rate loan might save money.`,
+                        tone: 'opportunity'
+                    });
+                }
+
+                // Emergency buffer
+                if (bankBalance < income * 2 && safeToSpend > 100) {
+                    adviceList.push({
+                        emoji: '🛡️',
+                        text: `Try to build 2 months of expenses as a safety net. You're ${((bankBalance / (income * 2)) * 100).toFixed(0)}% there!`,
+                        tone: 'encouraging'
+                    });
+                }
+
+                // Positive reinforcement
+                if (savingsRate > 20) {
+                    adviceList.push({
+                        emoji: '🎉',
+                        text: `${savingsRate.toFixed(0)}% savings rate? You're crushing it! Keep it up!`,
+                        tone: 'celebration'
+                    });
+                }
+
+                // Cash flow warning
+                if (safeToSpend < 100 && safeToSpend > 0) {
+                    adviceList.push({
+                        emoji: '⚠️',
+                        text: `Only $${safeToSpend.toFixed(0)} wiggle room this month. Maybe skip that dinner out?`,
+                        tone: 'caution'
+                    });
+                }
+                // Runway awareness
+                if (wealth.monthsRunway > 0 && wealth.monthsRunway < 2) {
+                    adviceList.push({
+                        emoji: '🛟',
+                        text: `You have about ${wealth.monthsRunway} months of runway. Priority now: preserve cash.`,
+                        tone: 'warning'
+                    });
+                }
+
+                // Buffer mindset
+                if (wealth.bufferProgress < 50 && safeToSpend > 0) {
+                    adviceList.push({
+                        emoji: '🏗️',
+                        text: `Before upgrading lifestyle, finish building your safety buffer (${wealth.bufferProgress}% done).`,
+                        tone: 'strategy'
+                    });
+                }
+                // Default encouragement
+                if (adviceList.length === 0) {
+                    adviceList.push({
+                        emoji: '✨',
+                        text: `You're doing great! Just keep tracking the big stuff.`,
+                        tone: 'encouragement'
+                    });
+                }
+
+                return adviceList[Math.floor(Math.random() * adviceList.length)];
+            };
+
+            const advice = getPersonalizedAdvice();
+
+            const getAvatarMood = () => {
+                if (spendingStatus === 'overspent') return 'worried';
+                if (netWorth < 0) return 'worried';
+                if (savingsRate > 30) return 'excited';
+                if (savingsRate > 20) return 'happy';
+                if (totalDebt > income * 6) return 'concerned';
+                if (monthlyNet < 0) return 'sad';
+                return 'neutral';
+            };
+
+            const getAvatarMessage = () => {
+                if (wealth.monthsRunway && wealth.monthsRunway < 1.5) {
+                    return [`Let’s protect your runway first 🛡️`, `Cash = oxygen right now`];
+                }
+
+                if (wealth.bufferProgress < 30) {
+                    return [`Build the base before climbing 🧱`, `Stability creates freedom`];
+                }
+                // Phase-based coaching (primary identity)
+                if (phaseCoach[wealthPhase]) {
+                    const messages = phaseCoach[wealthPhase];
+                    return [messages[Math.floor(Math.random() * messages.length)]];
+                }
+
+                const mood = getAvatarMood();
+                const messages = {
+                    excited: [`${userName}! You're on fire! 🚀`],
+                    happy: [`Hey ${userName}! Looking good! 😊`],
+                    neutral: [`Hi ${userName}! 💪`],
+                    concerned: [`We've got this, ${userName}! 💙`],
+                    sad: [`Let's turn this around! 🌈`],
+                    worried: [`I'm here for you! 💙`]
+                };
+                return messages[mood] || messages.neutral;
+            };
+
+            const getBottleColor = () => {
+                const mood = getAvatarMood();
+                const phase = wealthPhase;
+                const colors = {
+                    excited: { bottle: '#FCD34D', liquid: '#F59E0B', cap: '#DC2626', label: '#FEF3C7' },
+                    happy: { bottle: '#A7F3D0', liquid: '#34D399', cap: '#059669', label: '#D1FAE5' },
+                    neutral:
+                        phase === 'scale'
+                            ? { bottle: '#C7D2FE', liquid: '#6366F1', cap: '#4338CA', label: '#E0E7FF' }
+                            : phase === 'stabilize'
+                                ? { bottle: '#BBF7D0', liquid: '#22C55E', cap: '#15803D', label: '#DCFCE7' }
+                                : { bottle: '#E5E7EB', liquid: '#9CA3AF', cap: '#6B7280', label: '#F3F4F6' },
+                    concerned: { bottle: '#DDD6FE', liquid: '#A78BFA', cap: '#7C3AED', label: '#EDE9FE' },
+                    sad: { bottle: '#E2E8F0', liquid: '#94A3B8', cap: '#475569', label: '#F1F5F9' },
+                    worried: { bottle: '#FECACA', liquid: '#F87171', cap: '#DC2626', label: '#FEE2E2' }
+                };
+                return colors[mood] || colors.neutral;
+            };
+
+            const petAvatar = () => {
+                playSound('pop');
+                setUserInteraction(prev => prev + 1);
+                setIsPetting(true);
+                setShowHearts(true);
+                setTimeout(() => {
+                    setIsPetting(false);
+                    setShowHearts(false);
+                }, 1500);
+            };
+
+
+            const KombuchaBottle = ({ mood, isHovering, isPetting }) => {
+                const colors = getBottleColor();
+                const [bubblePhase, setBubblePhase] = useState(0);
+
+                useEffect(() => {
+                    const interval = setInterval(() => {
+                        setBubblePhase(prev => (prev + 1) % 3);
+                    }, 2000);
+                    return () => clearInterval(interval);
+                }, []);
+
+                const transform = isPetting ? 'scale(1.1)' : isHovering ? 'scale(1.05)' : 'scale(1)';
+
+                return (
+                    <svg viewBox="0 0 200 200" className="w-full h-full" style={{ transform, transition: 'transform 0.3s ease-out' }}>
+                        <defs>
+                            <linearGradient id={`bottleGradient-${mood}`} x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stopColor={colors.bottle} stopOpacity="0.9" />
+                                <stop offset="100%" stopColor={colors.bottle} stopOpacity="0.7" />
+                            </linearGradient>
+                            <linearGradient id={`liquidGradient-${mood}`} x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stopColor={colors.liquid} />
+                                <stop offset="100%" stopColor={colors.liquid} stopOpacity="0.8" />
+                            </linearGradient>
+                        </defs>
+
+                        <ellipse cx="100" cy="185" rx="35" ry="6" fill="#000000" opacity="0.1" />
+                        <rect x="70" y="80" width="60" height="100" rx="8" fill={`url(#bottleGradient-${mood})`} stroke={colors.bottle} strokeWidth="2" />
+                        <rect x="75" y="100" width="50" height="75" rx="5" fill={`url(#liquidGradient-${mood})`} />
+
+                        <g opacity="0.6">
+                            <circle cx="85" cy={150 - bubblePhase * 10} r="3" fill="white">
+                                <animate attributeName="cy" values="150;120;150" dur="3s" repeatCount="indefinite" />
+                            </circle>
+                            <circle cx="95" cy={160 - bubblePhase * 8} r="2" fill="white">
+                                <animate attributeName="cy" values="160;135;160" dur="3.5s" repeatCount="indefinite" />
+                            </circle>
+                            <circle cx="110" cy={155 - bubblePhase * 12} r="2.5" fill="white">
+                                <animate attributeName="cy" values="155;125;155" dur="2.8s" repeatCount="indefinite" />
+                            </circle>
+                            <circle cx="100" cy={145 - bubblePhase * 15} r="2" fill="white">
+                                <animate attributeName="cy" values="145;115;145" dur="3.2s" repeatCount="indefinite" />
+                            </circle>
+                        </g>
+
+                        <rect x="85" y="60" width="30" height="25" rx="3" fill={`url(#bottleGradient-${mood})`} stroke={colors.bottle} strokeWidth="2" />
+                        <rect x="82" y="45" width="36" height="18" rx="4" fill={colors.cap} stroke={colors.cap} strokeWidth="1" />
+                        <rect x="85" y="48" width="30" height="3" fill="#ffffff" opacity="0.3" />
+
+                        <rect x="75" y="110" width="50" height="25" rx="3" fill={colors.label} opacity="0.8" />
+                        <text x="100" y="120" textAnchor="middle" fontSize="8" fontWeight="bold" fill={colors.cap}>KOMBU</text>
+                        <text x="100" y="128" textAnchor="middle" fontSize="6" fill={colors.liquid}>BREW</text>
+
+                        <g>
+                            {mood === 'excited' && (
+                                <g>
+                                    <circle cx="90" cy="135" r="4" fill="#1F2937" />
+                                    <circle cx="110" cy="135" r="4" fill="#1F2937" />
+                                    <circle cx="91" cy="134" r="1.5" fill="white" />
+                                    <circle cx="111" cy="134" r="1.5" fill="white" />
+                                    <text x="87" y="130" fontSize="6">✨</text>
+                                    <text x="107" y="130" fontSize="6">✨</text>
+                                </g>
+                            )}
+
+                            {mood === 'happy' && (
+                                <g>
+                                    <ellipse cx="90" cy="135" rx="3.5" ry="4" fill="#1F2937" />
+                                    <ellipse cx="110" cy="135" rx="3.5" ry="4" fill="#1F2937" />
+                                    <circle cx="91" cy="134" r="1.5" fill="white" />
+                                    <circle cx="111" cy="134" r="1.5" fill="white" />
+                                </g>
+                            )}
+
+                            {mood === 'neutral' && (
+                                <g>
+                                    <circle cx="90" cy="135" r="3" fill="#1F2937" />
+                                    <circle cx="110" cy="135" r="3" fill="#1F2937" />
+                                    <circle cx="91" cy="134" r="1" fill="white" />
+                                    <circle cx="111" cy="134" r="1" fill="white" />
+                                </g>
+                            )}
+
+                            {(mood === 'concerned' || mood === 'sad') && (
+                                <g>
+                                    <ellipse cx="90" cy="136" rx="3" ry="2.5" fill="#1F2937" />
+                                    <ellipse cx="110" cy="136" rx="3" ry="2.5" fill="#1F2937" />
+                                    <circle cx="91" cy="135" r="1" fill="white" />
+                                    <circle cx="111" cy="135" r="1" fill="white" />
+                                </g>
+                            )}
+
+                            {mood === 'worried' && (
+                                <g>
+                                    <ellipse cx="90" cy="137" rx="3" ry="4" fill="#1F2937" />
+                                    <ellipse cx="110" cy="137" rx="3" ry="4" fill="#1F2937" />
+                                    <circle cx="91" cy="135" r="1" fill="white" />
+                                    <circle cx="111" cy="135" r="1" fill="white" />
+                                    <ellipse cx="115" cy="140" rx="2" ry="3" fill="#60A5FA" opacity="0.7">
+                                        <animate attributeName="cy" values="140;148;140" dur="2s" repeatCount="indefinite" />
+                                        <animate attributeName="opacity" values="0.7;0;0.7" dur="2s" repeatCount="indefinite" />
+                                    </ellipse>
+                                </g>
+                            )}
+
+                            {mood === 'excited' && (
+                                <path d="M 87 145 Q 100 153 113 145" stroke="#1F2937" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+                            )}
+
+                            {mood === 'happy' && (
+                                <path d="M 90 145 Q 100 150 110 145" stroke="#1F2937" strokeWidth="2" fill="none" strokeLinecap="round" />
+                            )}
+
+                            {mood === 'neutral' && (
+                                <line x1="90" y1="147" x2="110" y2="147" stroke="#1F2937" strokeWidth="2" strokeLinecap="round" />
+                            )}
+
+                            {(mood === 'concerned' || mood === 'sad') && (
+                                <path d="M 90 150 Q 100 146 110 150" stroke="#1F2937" strokeWidth="2" fill="none" strokeLinecap="round" />
+                            )}
+
+                            {mood === 'worried' && (
+                                <path d="M 90 152 Q 100 148 110 152" stroke="#1F2937" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+                            )}
+
+                            {(mood === 'excited' || mood === 'happy') && (
+                                <g opacity="0.4">
+                                    <circle cx="78" cy="142" r="5" fill="#F87171" />
+                                    <circle cx="122" cy="142" r="5" fill="#F87171" />
+                                </g>
+                            )}
+                        </g>
+
+                        <g opacity="0.3">
+                            <circle cx="80" cy="90" r="3" fill="white" />
+                            <circle cx="120" cy="95" r="2" fill="white" />
+                        </g>
+                    </svg>
+                );
+            };
+            // 🧠 Kombucha Coach Messages (by phase)
+            const phaseCoach = {
+                survive: [
+                    'Let’s slow things down 🛟',
+                    'Protecting cash is the win right now',
+                    'Breathe — stability comes first'
+                ],
+                stabilize: [
+                    'Nice work. Consistency builds freedom 🧱',
+                    'This is where momentum forms',
+                    'Small wins add up'
+                ],
+                scale: [
+                    'You’re playing offense now 🚀',
+                    'Think in options, not restrictions',
+                    'Money should buy freedom, not stress'
+                ]
+            };
+
+            // 🎨 Wealth Phase Themes
+            const phaseThemes = {
+                survive: {
+                    label: '🛟 Survival Mode',
+                    description: 'Protect cash and preserve runway'
+                },
+                stabilize: {
+                    label: '🧱 Stabilizing',
+                    description: 'Building consistency and buffer'
+                },
+                scale: {
+                    label: '🚀 Scaling',
+                    description: 'Expanding freedom and options'
+                }
+            };
+
+
+            const categoryColors = {
+                food: { bg: 'bg-orange-100', text: 'text-orange-600', border: 'border-orange-200' },
+                transport: { bg: 'bg-blue-100', text: 'text-blue-600', border: 'border-blue-200' },
+                housing: { bg: 'bg-purple-100', text: 'text-purple-600', border: 'border-purple-200' },
+                entertainment: { bg: 'bg-pink-100', text: 'text-pink-600', border: 'border-pink-200' },
+                utilities: { bg: 'bg-green-100', text: 'text-green-600', border: 'border-green-200' },
+                other: { bg: 'bg-gray-100', text: 'text-gray-600', border: 'border-gray-200' }
+            };
+
+            const onboardingQuestions = [
+                {
+                    title: "Welcome! What's your name?",
+                    subtitle: "Let's get to know each other! ✨",
+                    field: (
+                        <input type="text" placeholder="Enter your name..." value={userName} onChange={(e) => setUserName(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && canProceed && handleNext()}
+                            className="w-full p-4 text-lg rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none bg-white shadow-sm transition-all" autoFocus />
+                    )
+                },
+                {
+                    title: "How much do you earn monthly?",
+                    subtitle: "This helps us understand your cash flow 💰",
+                    field: (
+                        <input type="number" placeholder="e.g., 5000" value={income || ''} onChange={(e) => setIncome(parseFloat(e.target.value) || 0)}
+                            onKeyPress={(e) => e.key === 'Enter' && canProceed && handleNext()}
+                            className="w-full p-4 text-lg rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none bg-white shadow-sm transition-all" autoFocus />
+                    )
+                },
+                {
+                    title: "What's in your bank account right now?",
+                    subtitle: "Just your checking/savings total 🏦",
+                    field: (
+                        <input type="number" placeholder="e.g., 10000" value={bankBalance || ''} onChange={(e) => setBankBalance(parseFloat(e.target.value) || 0)}
+                            onKeyPress={(e) => e.key === 'Enter' && canProceed && handleNext()}
+                            className="w-full p-4 text-lg rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none bg-white shadow-sm transition-all" autoFocus />
+                    )
+                },
+                {
+                    title: "Any credit card debt?",
+                    subtitle: "It's okay, we're here to help! 💳",
+                    field: (
+                        <input type="number" placeholder="e.g., 0 (enter 0 if none)" value={creditCardDebt || ''} onChange={(e) => setCreditCardDebt(parseFloat(e.target.value) || 0)}
+                            onKeyPress={(e) => e.key === 'Enter' && canProceed && handleNext()}
+                            className="w-full p-4 text-lg rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none bg-white shadow-sm transition-all" autoFocus />
+                    )
+                },
+                {
+                    title: "Any loans?",
+                    subtitle: "You can skip this and add them later! 🚗",
+                    field: (
+                        <div className="text-center py-8">
+                            <p className="text-gray-600 mb-4">You can manage loans in the app anytime</p>
+                            <button onClick={handleNext}
+                                className="px-8 py-3 bg-purple-100 text-purple-600 rounded-xl font-semibold active:bg-purple-200 transition">
+                                Skip for now
+                            </button>
+                        </div>
+                    )
+                },
+                {
+                    title: "How much can you save monthly?",
+                    subtitle: "Your savings/investments combined 🌱",
+                    field: (
+                        <input type="number" placeholder="e.g., 1000" value={savings || ''} onChange={(e) => setSavings(parseFloat(e.target.value) || 0)}
+                            onKeyPress={(e) => e.key === 'Enter' && canProceed && handleNext()}
+                            className="w-full p-4 text-lg rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none bg-white shadow-sm transition-all" autoFocus />
+                    )
+                }
+            ];
+
+            if (isFirstTime) {
+                const currentQuestion = onboardingQuestions[onboardingStep];
+                const progress = ((onboardingStep + 1) / onboardingQuestions.length) * 100;
+
+                return (
+                    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 flex items-center justify-center p-4" style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none' }}>
+                        <style>{`
+          @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&family=Nunito:wght@300;400;600;700;800&display=swap');
+          * { 
+            font-family: 'Nunito', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+          }
+          h1, h2, h3 { font-family: 'Quicksand', sans-serif; }
+          @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+          .pulse-animation { animation: pulse 2s ease-in-out infinite; }
+          input { font-size: 16px !important; }
+        `}</style>
+
+                        <div className="max-w-md w-full">
+                            <div className="mb-8">
+                                <div className="h-2 bg-white/50 rounded-full overflow-hidden backdrop-blur-sm">
+                                    <div className="h-full bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-500 ease-out" style={{ width: `${progress}%` }}></div>
+                                </div>
+                                <div className="text-center mt-2 text-sm text-purple-600 font-medium">Step {onboardingStep + 1} of {onboardingQuestions.length}</div>
+                            </div>
+
+                            <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl p-8 border border-white/50">
+                                <div className="text-center mb-8">
+                                    <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
+                                        <span className="text-4xl">✨</span>
+                                    </div>
+                                    <h2 className="text-3xl font-bold text-gray-800 mb-2">{currentQuestion.title}</h2>
+                                    <p className="text-gray-600">{currentQuestion.subtitle}</p>
+                                </div>
+
+                                <div className="mb-6">{currentQuestion.field}</div>
+
+                                {onboardingStep !== 4 && (
+                                    <div className="mb-6 text-center">
+                                        {canProceed ? (
+                                            <p className="text-sm text-green-600 font-medium">✓ Press Enter or tap Next</p>
+                                        ) : (
+                                            <p className="text-sm text-gray-500 pulse-animation">👆 Fill in the field above</p>
+                                        )}
+                                    </div>
+                                )}
+
+                                {onboardingStep !== 4 && (
+                                    <div className="flex gap-3">
+                                        {onboardingStep > 0 && (
+                                            <button onClick={() => setOnboardingStep(prev => prev - 1)}
+                                                className="flex-1 py-4 rounded-2xl border-2 border-gray-200 text-gray-600 font-semibold active:bg-gray-100 transition">
+                                                ← Back
+                                            </button>
+                                        )}
+                                        <button onClick={handleNext} disabled={!canProceed}
+                                            className={`flex-1 py-4 rounded-2xl font-semibold transition shadow-lg active:scale-95 flex items-center justify-center gap-2 ${canProceed ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white active:from-purple-600 active:to-pink-600' : 'bg-gray-200 text-gray-400'
+                                                }`}>
+                                            {onboardingStep < onboardingQuestions.length - 1 ? (<>Next <ArrowRight className="w-5 h-5" /></>) : (<>Let's Go! <Star className="w-5 h-5" /></>)}
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (showLanding) {
+                const messages = getAvatarMessage();
+                const mood = getAvatarMood();
+
+                return (
+                    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 flex items-center justify-center p-4" style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none' }}>
+                        <style>{`
+          @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&family=Nunito:wght@300;400;600;700;800&display=swap');
+          * { 
+            font-family: 'Nunito', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+          }
+          h1, h2, h3 { font-family: 'Quicksand', sans-serif; }
+          @keyframes floatHearts {
+            0% { transform: translateY(0) scale(0); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-100px) scale(1); opacity: 0; }
+          }
+          .heart-float { animation: floatHearts 2s ease-out forwards; }
+        `}</style>
+
+                        <div className="max-w-2xl w-full text-center">
+                            {/* Safe to Spend Banner */}
+                            <div className={`mb-6 p-4 rounded-2xl ${spendingStatus === 'safe' ? 'bg-green-100 border-2 border-green-300' :
+                                spendingStatus === 'caution' ? 'bg-yellow-100 border-2 border-yellow-300' :
+                                    'bg-red-100 border-2 border-red-300'
+                                }`}>
+                                <div className="flex items-center justify-center gap-2">
+                                    {spendingStatus === 'safe' && <CheckCircle className="w-5 h-5 text-green-600" />}
+                                    {spendingStatus === 'caution' && <Info className="w-5 h-5 text-yellow-600" />}
+                                    {spendingStatus === 'overspent' && <AlertTriangle className="w-5 h-5 text-red-600" />}
+                                    <div className="text-left flex-1">
+                                        <div className={`font-bold text-sm ${spendingStatus === 'safe' ? 'text-green-700' :
+                                            spendingStatus === 'caution' ? 'text-yellow-700' :
+                                                'text-red-700'
+                                            }`}>
+                                            {spendingStatus === 'safe' && 'Safe to spend (runway-safe)'}
+                                            {spendingStatus === 'caution' && 'Spend carefully'}
+                                            {spendingStatus === 'overspent' && '⚠️ Overspent'}
+                                        </div>
+                                        <div className={`text-2xl font-bold ${spendingStatus === 'safe' ? 'text-green-600' :
+                                            spendingStatus === 'caution' ? 'text-yellow-600' :
+                                                'text-red-600'
+                                            }`}>
+                                            ${Math.abs(safeToSpend).toLocaleString()}
+                                            {spendingStatus === 'overspent' && ' over'}
+                                            <div className="text-xs opacity-70 mt-1">
+                                                Won’t reduce your financial runway
+                                            </div>
+                                            {wealth.monthsRunway > 0 && (
+                                                <div className="text-xs opacity-80">
+                                                    ≈ {wealth.monthsRunway} months of runway
+                                                </div>
+                                            )}
+                                            <div className="text-xs font-semibold mt-1 text-gray-700">
+                                                {phaseThemes[wealthPhase].label}
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mb-8 relative">
+                                <div onClick={petAvatar} onTouchStart={() => setIsHovering(true)} onTouchEnd={() => setIsHovering(false)}
+                                    className="w-64 h-64 mx-auto mb-6 cursor-pointer relative active:scale-95 transition-transform" style={{ userSelect: 'none' }}>
+                                    <div className="absolute inset-0 bg-white rounded-full shadow-2xl"></div>
+                                    <div className="relative z-10 p-8">
+                                        <KombuchaBottle mood={mood} isHovering={isHovering} isPetting={isPetting} />
+                                    </div>
+
+                                    {showHearts && (
+                                        <div className="absolute inset-0 pointer-events-none">
+                                            {[...Array(5)].map((_, i) => (
+                                                <div key={i} className="absolute heart-float" style={{ left: `${30 + i * 10}%`, bottom: '50%', animationDelay: `${i * 0.2}s` }}>
+                                                    <Heart className="w-6 h-6 text-pink-500 fill-pink-500" />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {userInteraction > 0 && (
+                                        <div className="absolute top-0 right-0 w-14 h-14 bg-gradient-to-br from-pink-400 to-red-400 rounded-full flex items-center justify-center text-white font-bold shadow-lg z-20 transition-transform duration-300"
+                                            style={{ transform: isPetting ? 'scale(1.2)' : 'scale(1)' }}>
+                                            <div className="text-center">
+                                                <Heart className="w-6 h-6 fill-current mx-auto" />
+                                                <div className="text-xs mt-0.5">{userInteraction}</div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <p className="text-sm text-gray-500 mb-2">👆 Tap me for good vibes!</p>
+
+                                <div className="bg-white rounded-3xl p-6 shadow-xl border-2 border-purple-100 max-w-md mx-auto mb-8 relative">
+                                    <div className="text-xs font-semibold text-purple-600 mb-2">
+                                        Kombucha — your financial coach
+                                    </div>
+                                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-transparent border-b-white"></div>
+                                    <div className="space-y-3">
+                                        {messages.map((msg, i) => (
+                                            <p key={i} className="text-gray-700 font-medium text-lg">{msg}</p>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-3 gap-4 mb-8">
+                                <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/50 active:scale-95 transition-transform">
+                                    <div className="text-2xl mb-2">💰</div>
+                                    <div className="text-sm text-gray-600 mb-1">Net Worth</div>
+                                    <div className={`text-xl font-bold ${netWorth >= 0 ? 'text-green-600' : 'text-red-600'}`}>${netWorth.toLocaleString()}</div>
+                                </div>
+                                <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/50 active:scale-95 transition-transform">
+                                    <div className="text-2xl mb-2">📊</div>
+                                    <div className="text-sm text-gray-600 mb-1">Savings Rate</div>
+                                    <div className="text-xl font-bold text-purple-600">{savingsRate.toFixed(0)}%</div>
+                                </div>
+                                <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/50 active:scale-95 transition-transform">
+                                    <div className="text-2xl mb-2">🎯</div>
+                                    <div className="text-sm text-gray-600 mb-1">Monthly Net</div>
+                                    <div className={`text-xl font-bold ${monthlyNet >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>${monthlyNet.toLocaleString()}</div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-3 mb-8">
+                                <button onClick={() => setShowLanding(false)}
+                                    className="w-full py-5 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold text-lg active:from-purple-600 active:to-pink-600 active:scale-95 transition shadow-xl flex items-center justify-center gap-3">
+                                    Let's Build Wealth Today! <ChevronRight className="w-6 h-6" />
+                                </button>
+
+                                <div className="grid grid-cols-2 gap-3">
+                                    <button onClick={() => {
+                                        playSound('whoosh');
+                                        setShowLanding(false);
+                                        setShowQuickAdd(true);
+                                    }}
+                                        className="py-4 rounded-2xl bg-white/80 backdrop-blur-sm border-2 border-purple-200 text-purple-600 font-semibold active:bg-purple-50 active:scale-95 transition shadow-lg flex items-center justify-center gap-2">
+                                        <Zap className="w-5 h-5" />
+                                        Quick Log
+                                    </button>
+                                    <button onClick={() => {
+                                        playSound('whoosh');
+                                        setShowLanding(false);
+                                        setShowQuickAdd(true);
+                                    }}
+
+                                        className="py-4 rounded-2xl bg-white/80 backdrop-blur-sm border-2 border-blue-200 text-blue-600 font-semibold active:bg-blue-50 active:scale-95 transition shadow-lg flex items-center justify-center gap-2">
+                                        <Lightbulb className="w-5 h-5" />
+                                        My Advice
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-2xl p-4 border-2 border-yellow-200">
+                                <div className="flex items-center gap-3 justify-center">
+                                    <span className="text-2xl">{advice.emoji}</span>
+                                    <p className="text-sm text-gray-700 text-left flex-1">
+                                        {advice.text}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div
+                    className={`min-h-screen pb-20 ${wealthPhase === 'survive'
+                        ? 'bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50'
+                        : wealthPhase === 'stabilize'
+                            ? 'bg-gradient-to-br from-yellow-50 via-green-50 to-emerald-50'
+                            : 'bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50'
+                        }`}
+                >
+                    <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&family=Nunito:wght@300;400;600;700;800&display=swap');
+        * { 
+          font-family: 'Nunito', sans-serif;
+          -webkit-tap-highlight-color: transparent;
+        }
+        h1, h2, h3 { font-family: 'Quicksand', sans-serif; }
+        input { font-size: 16px !important; }
+      `}</style>
+
+                    <div className="max-w-6xl mx-auto p-4">
+                        {/* Safe to Spend Header */}
+                        <div className={`mb-4 p-4 rounded-2xl sticky top-0 z-40 ${spendingStatus === 'safe' ? 'bg-green-100 border-2 border-green-300' :
+                            spendingStatus === 'caution' ? 'bg-yellow-100 border-2 border-yellow-300' :
+                                'bg-red-100 border-2 border-red-300'
+                            }`}>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    {spendingStatus === 'safe' && <CheckCircle className="w-5 h-5 text-green-600" />}
+                                    {spendingStatus === 'caution' && <Info className="w-5 h-5 text-yellow-600" />}
+                                    {spendingStatus === 'overspent' && <AlertTriangle className="w-5 h-5 text-red-600" />}
+                                    <div>
+                                        <div className={`font-bold text-xs ${spendingStatus === 'safe' ? 'text-green-700' :
+                                            spendingStatus === 'caution' ? 'text-yellow-700' :
+                                                'text-red-700'
+                                            }`}>
+                                            {spendingStatus === 'safe' && 'Safe to spend (runway-safe)'}
+                                            {spendingStatus === 'caution' && 'Spend carefully'}
+                                            {spendingStatus === 'overspent' && '⚠️ Overspent'}
+                                        </div>
+                                        <div className={`text-xl font-bold ${spendingStatus === 'safe' ? 'text-green-600' :
+                                            spendingStatus === 'caution' ? 'text-yellow-600' :
+                                                'text-red-600'
+                                            }`}>
+                                            ${Math.abs(safeToSpend).toLocaleString()}
+                                            {spendingStatus === 'overspent' && ' over'}
+
+                                            <div className="text-xs opacity-70 mt-1">
+                                                Won’t reduce your financial runway
+                                            </div>
+
+                                            {wealth.monthsRunway > 0 && (
+                                                <div className="text-xs opacity-80">
+                                                    ≈ {wealth.monthsRunway} months of runway
+                                                </div>
+                                            )}
+                                            <div className="text-xs font-semibold mt-1 text-gray-700">
+                                                {phaseThemes[wealthPhase].label}
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onClick={() => setShowLanding(true)}
+                                    className="w-16 h-16 rounded-2xl bg-white shadow-lg active:scale-95 transition border-2 border-purple-200 p-1">
+                                    <KombuchaBottle mood={getAvatarMood()} isHovering={false} isPetting={false} />
+                                </button>
+                                <button
+                                    onClick={() => setSoundEnabled(prev => !prev)}
+                                    className="w-10 h-10 rounded-xl bg-white shadow border-2 border-gray-200 active:scale-95 transition text-sm"
+                                >
+                                    {soundEnabled ? '🔊' : '🔇'}
+                                </button>
+
+                            </div>
+                        </div>
+
+                        {/* Modals */}
+                        {showQuickAdd && (
+                            <div
+                                className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+                                onClick={() => {
+                                    playSound('tap');
+                                    setShowQuickAdd(false);
+                                }}
+                            >
+                                <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="text-xl font-bold text-gray-800">Quick Log</h3>
+                                        <button onClick={() => setShowQuickAdd(false)} className="text-gray-400 active:text-gray-600 text-2xl">×</button>
+                                    </div>
+
+                                    <div className="space-y-4 mb-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">This week's small stuff</label>
+                                            <div className="flex gap-2">
+                                                <input type="number" placeholder="e.g., 150" value={weeklyEstimate} onChange={(e) => setWeeklyEstimate(e.target.value)}
+                                                    className="flex-1 p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none" />
+                                                <button onClick={addWeeklyEstimate}
+                                                    className="px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold active:from-purple-600 active:to-pink-600 active:scale-95 transition">
+                                                    Add
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div className="border-t-2 border-gray-100 pt-4">
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Quick presets</label>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                {[
+                                                    { label: 'Groceries', amount: 150, category: 'food' },
+                                                    { label: 'Gas', amount: 60, category: 'transport' },
+                                                    { label: 'Dinner Out', amount: 100, category: 'food' },
+                                                    { label: 'Utilities', amount: 120, category: 'utilities' }
+                                                ].map((preset) => (
+                                                    <button key={preset.label} onClick={() => { quickAddPreset(preset.label, preset.amount, preset.category); setShowQuickAdd(false); }}
+                                                        className="p-3 bg-gray-100 active:bg-purple-100 rounded-xl text-sm font-medium text-gray-700 active:text-purple-600 active:scale-95 transition">
+                                                        {preset.label} <span className="text-xs">(~${preset.amount})</span>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {showLoanModal && (
+                            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowLoanModal(false)}>
+                                <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="text-xl font-bold text-gray-800">Add Loan</h3>
+                                        <button onClick={() => setShowLoanModal(false)} className="text-gray-400 active:text-gray-600 text-2xl">×</button>
+                                    </div>
+
+                                    <div className="space-y-3 mb-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Loan Name</label>
+                                            <input type="text" placeholder="e.g., Personal Loan" value={newLoan.name} onChange={(e) => setNewLoan({ ...newLoan, name: e.target.value })}
+                                                className="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none" />
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+                                                <input type="number" placeholder="5000" value={newLoan.amount} onChange={(e) => setNewLoan({ ...newLoan, amount: e.target.value })}
+                                                    className="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">APR %</label>
+                                                <input type="number" placeholder="8" value={newLoan.apr} onChange={(e) => setNewLoan({ ...newLoan, apr: e.target.value })}
+                                                    className="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none" />
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Payment</label>
+                                            <input type="number" placeholder="150" value={newLoan.monthlyPayment} onChange={(e) => setNewLoan({ ...newLoan, monthlyPayment: e.target.value })}
+                                                className="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none" />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Purpose</label>
+                                            <select value={newLoan.purpose} onChange={(e) => setNewLoan({ ...newLoan, purpose: e.target.value })}
+                                                className="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none">
+                                                <option value="debt-consolidation">Pay off CC debt</option>
+                                                <option value="emergency-buffer">Emergency buffer</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <button onClick={addLoan}
+                                        className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold active:from-purple-600 active:to-pink-600 active:scale-95 transition">
+                                        Add Loan
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="flex gap-2 mb-6 overflow-x-auto pb-2 -mx-4 px-4">
+                            <button
+                                onClick={() => {
+                                    playSound('whoosh');
+                                    setShowQuickAdd(true);
+                                }}
+                                className="flex items-center gap-2 px-4 py-3 rounded-2xl font-semibold bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg active:scale-95 transition whitespace-nowrap">
+
+                                <Zap className="w-4 h-4" />
+                                Quick Log
+                            </button>
+                            {[
+                                { id: 'dashboard', label: 'Home', icon: '🏠' },
+                                { id: 'loans', label: 'Loans', icon: '💳' },
+                                { id: 'advice', label: 'Advice', icon: '💡' }
+                            ].map(tab => (
+                                <button key={tab.id} onClick={() => setView(tab.id)}
+                                    className={`flex items-center gap-2 px-4 py-3 rounded-2xl font-semibold active:scale-95 transition-all whitespace-nowrap ${view === tab.id ? 'bg-white text-purple-600 shadow-lg border-2 border-purple-200' : 'bg-white/50 text-gray-700 border-2 border-gray-200'
+                                        }`}>
+                                    <span className="text-base">{tab.icon}</span>
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        {view === 'dashboard' && (
+                            <div className="space-y-4">
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-green-100 active:scale-95 transition">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <span className="text-gray-600 font-medium text-sm">Income</span>
+                                            <span className="text-xl">💵</span>
+                                        </div>
+                                        <div className="text-2xl font-bold text-green-600">${income.toLocaleString()}</div>
+                                    </div>
+
+                                    <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-red-100 active:scale-95 transition">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <span className="text-gray-600 font-medium text-sm">Expenses</span>
+                                            <span className="text-xl">📊</span>
+                                        </div>
+                                        <div className="text-2xl font-bold text-red-600">${totalExpenses.toLocaleString()}</div>
+                                    </div>
+
+                                    <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-blue-100 active:scale-95 transition">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <span className="text-gray-600 font-medium text-sm">Monthly Net</span>
+                                            <span className="text-xl">💰</span>
+                                        </div>
+                                        <div className={`text-2xl font-bold ${monthlyNet >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>${monthlyNet.toLocaleString()}</div>
+                                    </div>
+
+                                    <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-purple-100 active:scale-95 transition">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <span className="text-gray-600 font-medium text-sm">Savings</span>
+                                            <span className="text-xl">🏦</span>
+                                        </div>
+                                        <div className="text-2xl font-bold text-purple-600">{savingsRate.toFixed(0)}%</div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl p-6 shadow-2xl text-white">
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <div className="text-3xl">✨</div>
+                                        <div>
+                                            <h3 className="text-xl font-bold">Net Worth</h3>
+                                            <p className="text-purple-100 text-sm">Assets - Liabilities</p>
+                                        </div>
+                                    </div>
+                                    <div className="text-4xl font-bold mb-4">${netWorth.toLocaleString()}</div>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3">
+                                            <div className="text-xs text-purple-100 mb-1">Assets</div>
+                                            <div className="text-xl font-bold">${(bankBalance + savings).toLocaleString()}</div>
+                                        </div>
+                                        <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3">
+                                            <div className="text-xs text-purple-100 mb-1">Debts</div>
+                                            <div className="text-xl font-bold">${totalDebt.toLocaleString()}</div>
+                                        </div>
+                                    </div>
+                                    {/* 🧠 Decision Simulator */}
+                                    <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-purple-100">
+                                        <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                                            🧠 Decision Simulator
+                                        </h3>
+
+                                        <p className="text-sm text-gray-600 mb-3">
+                                            Test a purchase before making it. Think in runway, not impulse.
+                                        </p>
+
+                                        <input
+                                            type="number"
+                                            placeholder="If I spend RM..."
+                                            value={decisionAmount}
+                                            onChange={(e) => setDecisionAmount(e.target.value)}
+                                            className="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none mb-3"
+                                        />
+
+                                        {decisionImpact && (
+                                            <div className="space-y-2 text-sm">
+                                                <div className="flex items-center gap-2">
+                                                    ⏳ <span>This costs about <strong>{decisionImpact.daysLost} days</strong> of runway</span>
+                                                </div>
+
+                                                {decisionImpact.weakensBuffer && (
+                                                    <div className="flex items-center gap-2 text-orange-600">
+                                                        ⚠️ <span>This weakens your safety buffer</span>
+                                                    </div>
+                                                )}
+
+                                                {!decisionImpact.weakensBuffer && (
+                                                    <div className="flex items-center gap-2 text-green-600">
+                                                        ✅ <span>Your buffer stays intact</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                </div>
+
+                                {expenses.length > 0 && (
+                                    <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-gray-100">
+                                        <h3 className="text-lg font-bold mb-3 text-gray-800">Recent Activity</h3>
+                                        <div className="space-y-2">
+                                            {expenses.slice().reverse().slice(0, 5).map((expense) => {
+                                                const colors = categoryColors[expense.category];
+                                                return (
+                                                    <div key={expense.id} className={`flex items-center justify-between p-3 rounded-xl ${colors.bg} border-2 ${colors.border} active:scale-95 transition`}>
+                                                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                                                            <span className={`px-2 py-1 rounded-lg text-xs font-medium ${colors.text}`}>
+                                                                {expense.type === 'estimate' ? '≈' : expense.type === 'quick' ? '⚡' : '💰'}
+                                                            </span>
+                                                            <span className="text-gray-800 font-medium truncate flex-1 text-sm">{expense.description}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-lg font-bold text-gray-800">${expense.amount}</span>
+                                                            <button onClick={() => deleteExpense(expense.id)} className="text-red-500 active:text-red-700 active:scale-110 transition">×</button>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {view === 'loans' && (
+                            <div className="space-y-4">
+                                <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-purple-100">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="text-xl font-bold text-gray-800">My Loans</h3>
+                                        <button onClick={() => setShowLoanModal(true)}
+                                            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold active:from-purple-600 active:to-pink-600 active:scale-95 transition">
+                                            <Plus className="w-4 h-4" />
+                                            Add Loan
+                                        </button>
+                                    </div>
+
+                                    {loans.length === 0 ? (
+                                        <div className="text-center py-12">
+                                            <div className="text-6xl mb-4">💳</div>
+                                            <p className="text-gray-500 mb-4">No loans yet</p>
+                                            <p className="text-sm text-gray-400">Add a loan to track payments and see how it affects your finances</p>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-3">
+                                            {loans.map((loan) => (
+                                                <div key={loan.id} className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4 border-2 border-blue-200">
+                                                    <div className="flex items-start justify-between mb-2">
+                                                        <div className="flex-1">
+                                                            <h4 className="font-bold text-gray-800">{loan.name}</h4>
+                                                            <p className="text-sm text-gray-600">{loan.apr}% APR</p>
+                                                        </div>
+                                                        <button onClick={() => deleteLoan(loan.id)} className="text-red-500 active:text-red-700 active:scale-110 transition">
+                                                            <X className="w-5 h-5" />
+                                                        </button>
+                                                    </div>
+                                                    <div className="grid grid-cols-2 gap-2 text-sm">
+                                                        <div>
+                                                            <div className="text-gray-600">Amount</div>
+                                                            <div className="font-bold text-gray-800">${loan.amount.toLocaleString()}</div>
+                                                        </div>
+                                                        <div>
+                                                            <div className="text-gray-600">Monthly Payment</div>
+                                                            <div className="font-bold text-blue-600">${loan.monthlyPayment.toLocaleString()}</div>
+                                                        </div>
+                                                    </div>
+                                                    {loan.purpose === 'debt-consolidation' && (
+                                                        <div className="mt-2 text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-lg inline-block">
+                                                            💡 Debt consolidation
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {creditCardDebt > 0 && loans.length === 0 && (
+                                        <div className="mt-4 p-4 bg-yellow-50 rounded-xl border-2 border-yellow-200">
+                                            <div className="flex items-start gap-2">
+                                                <Lightbulb className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                                                <div className="text-sm text-yellow-700">
+                                                    <strong>Tip:</strong> You have ${creditCardDebt.toLocaleString()} in CC debt at {creditCardAPR}% APR.
+                                                    A lower-rate loan could save you ${((creditCardDebt * (creditCardAPR / 100)) / 12).toFixed(0)}/month!
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {view === 'advice' && (
+                            <div className="space-y-3">
+                                <div className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-2xl p-6 border-2 border-yellow-200">
+                                    <div className="flex items-start gap-3 mb-4">
+                                        <span className="text-4xl">{advice.emoji}</span>
+                                        <div className="flex-1">
+                                            <h3 className="font-bold text-gray-800 mb-2 text-lg">Your Personalized Tip</h3>
+                                            <p className="text-gray-700 leading-relaxed">{advice.text}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-100">
+                                    <h3 className="font-bold text-gray-800 mb-3">Quick Reminders</h3>
+                                    <div className="space-y-2 text-sm text-gray-600">
+                                        <div className="flex items-start gap-2">
+                                            <span>✨</span>
+                                            <p>Track the big stuff, estimate the small stuff</p>
+                                        </div>
+                                        <div className="flex items-start gap-2">
+                                            <span>💰</span>
+                                            <p>Aim to save 20-30% of your income</p>
+                                        </div>
+                                        <div className="flex items-start gap-2">
+                                            <span>🎯</span>
+                                            <p>Build 3-6 months of expenses as emergency fund</p>
+                                        </div>
+                                        <div className="flex items-start gap-2">
+                                            <span>📊</span>
+                                            <p>Focus on trends, not perfection</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<FinanceApp />);
+    </script>
+</body>
+
+</html>
