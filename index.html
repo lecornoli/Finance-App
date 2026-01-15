@@ -2371,8 +2371,11 @@
                         {view === 'dashboard' && (
                             <div className="space-y-4">
                                 <div className="grid grid-cols-2 gap-3">
-                                    onClick={() => setView('logs')}
-                                    <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-green-100 active:scale-95 transition">
+
+
+                                    <div
+                                        onClick={() => setView('logs')}
+                                        className="bg-white rounded-2xl p-4 shadow-lg border-2 border-green-100 active:scale-95 transition">
                                         <div className="flex items-center justify-between mb-2">
                                             <span className="text-gray-600 font-medium text-sm">Income</span>
                                             <span className="text-xl">💵</span>
@@ -2380,8 +2383,10 @@
                                         <div className="text-2xl font-bold text-green-600">${income.toLocaleString()}</div>
                                     </div>
 
-                                    onClick={() => setView('logs')}
-                                    <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-red-100 active:scale-95 transition">
+
+                                    <div
+                                        onClick={() => setView('logs')}
+                                        className="bg-white rounded-2xl p-4 shadow-lg border-2 border-red-100 active:scale-95 transition">
                                         <div className="flex items-center justify-between mb-2">
                                             <span className="text-gray-600 font-medium text-sm">Expenses</span>
                                             <span className="text-xl">📊</span>
@@ -2389,17 +2394,21 @@
                                         <div className="text-2xl font-bold text-red-600">${totalExpenses.toLocaleString()}</div>
                                     </div>
 
-                                    onClick={() => setView('logs')}
+
                                     <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-blue-100 active:scale-95 transition">
-                                        <div className="flex items-center justify-between mb-2">
+                                        <div
+                                            onClick={() => setView('logs')}
+                                            className="flex items-center justify-between mb-2">
                                             <span className="text-gray-600 font-medium text-sm">Monthly Net</span>
                                             <span className="text-xl">💰</span>
                                         </div>
                                         <div className={`text-2xl font-bold ${monthlyNet >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>${monthlyNet.toLocaleString()}</div>
                                     </div>
 
-                                    onClick={() => setView('logs')}
-                                    <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-purple-100 active:scale-95 transition">
+
+                                    <div
+                                        onClick={() => setView('logs')}
+                                        className="bg-white rounded-2xl p-4 shadow-lg border-2 border-purple-100 active:scale-95 transition">
                                         <div className="flex items-center justify-between mb-2">
                                             <span className="text-gray-600 font-medium text-sm">Savings</span>
                                             <span className="text-xl">🏦</span>
