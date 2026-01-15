@@ -1361,7 +1361,7 @@
                 if (!amount || amount <= 0 || income <= 0) return null;
 
                 const dailyIncome = Math.max(1, (income - totalExpenses) / 30);
-                const daysLost = Math.round(amount / dailyIncome);
+                const daysLost = Math.max(0, Math.round(amount / dailyIncome));
 
                 const newBufferProgress = Math.min(
                     100,
@@ -1383,7 +1383,6 @@
                         ? 'Moderate impact. Make sure this is a need not a WANT.'
                         : 'Low impact. You can breathe.'
                 : null;
-
 
             // Smart, personalized advice based on user behavior
             const getPersonalizedAdvice = () => {
@@ -2406,10 +2405,10 @@
                                     </div>
 
 
-                                    <div
-                                        onClick={() => setView('logs')}
-                                        className="bg-white rounded-2xl p-4 shadow-lg border-2 border-purple-100 active:scale-95 transition">
-                                        <div className="flex items-center justify-between mb-2">
+                                    <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-purple-100 active:scale-95 transition">
+                                        <div
+                                            onClick={() => setView('logs')}
+                                            className="flex items-center justify-between mb-2">
                                             <span className="text-gray-600 font-medium text-sm">Savings</span>
                                             <span className="text-xl">🏦</span>
                                         </div>
@@ -2473,14 +2472,16 @@
                                                 )}
                                             </div>
                                         )}
-                                    </div>
 
-                                </div>
-                                {decisionAdvice && (
-                                    <div className="mt-3 text-sm font-semibold text-purple-600">
-                                        💬 {decisionAdvice}
+                                        {decisionAdvice && (
+                                            <div className="mt-3 text-sm font-semibold text-purple-600">
+                                                💬 {decisionAdvice}
+                                            </div>
+                                        )}
+
                                     </div>
-                                )}
+                                </div>
+
 
                                 {expenses.length > 0 && (
                                     <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-gray-100">
