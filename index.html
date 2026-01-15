@@ -2390,7 +2390,7 @@
 
 
                                     <div
-                                        onClick={() => setView('logs')}
+                                        onClick={() => setView('expenses')}
                                         className="bg-white rounded-2xl p-4 shadow-lg border-2 border-red-100 active:scale-95 transition">
                                         <div className="flex items-center justify-between mb-2">
                                             <span className="text-gray-600 font-medium text-sm">Expenses</span>
@@ -2666,6 +2666,53 @@
                                         </div>
                                     );
                                 })}
+                            </div>
+                        )}
+                        {view === 'expenses' && (
+                            <div className="space-y-3">
+                                <h3 className="text-xl font-bold text-gray-800 mb-2">
+                                    Expenses
+                                </h3>
+
+                                <p className="text-sm text-gray-600 mb-4">
+                                    Money that left your account this month.
+                                </p>
+
+                                {expenses.filter(e => e.amount > 0).length === 0 ? (
+                                    <div className="bg-white rounded-2xl p-6 shadow border-2 border-gray-100 text-center text-gray-500">
+                                        No expenses logged yet.
+                                    </div>
+                                ) : (
+                                    expenses
+                                        .filter(e => e.amount > 0)
+                                        .slice()
+                                        .reverse()
+                                        .map(expense => {
+                                            const colors = categoryColors[expense.category];
+                                            return (
+                                                <div
+                                                    key={expense.id}
+                                                    onClick={() => {
+                                                        setSelectedExpense(expense);
+                                                        setEditExpense({ ...expense });
+                                                    }}
+                                                    className={`p-4 rounded-xl border-2 ${colors.border} ${colors.bg} cursor-pointer active:scale-95 transition`}
+                                                >
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="font-medium truncate">
+                                                            {expense.description}
+                                                        </span>
+                                                        <span className="font-bold">
+                                                            ${expense.amount}
+                                                        </span>
+                                                    </div>
+                                                    <div className="text-xs text-gray-500 mt-1">
+                                                        {new Date(expense.date).toLocaleDateString()}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })
+                                )}
                             </div>
                         )}
 
