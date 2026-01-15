@@ -2373,7 +2373,7 @@
 
 
                                     <div
-                                        onClick={() => setView('logs')}
+                                        onClick={() => setView('income')}
                                         className="bg-white rounded-2xl p-4 shadow-lg border-2 border-green-100 active:scale-95 transition">
                                         <div className="flex items-center justify-between mb-2">
                                             <span className="text-gray-600 font-medium text-sm">Income</span>
@@ -2530,6 +2530,35 @@
                                         </div>
                                     </div>
                                 )}
+                            </div>
+                        )}
+                        {view === 'income' && (
+                            <div className="space-y-4">
+                                <h3 className="text-xl font-bold text-gray-800">
+                                    Monthly Income
+                                </h3>
+
+                                <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-green-100">
+                                    <div className="text-sm text-gray-500 mb-1">
+                                        Average monthly take-home
+                                    </div>
+
+                                    <div className="text-4xl font-bold text-green-600 mb-4">
+                                        ${income.toLocaleString()}
+                                    </div>
+
+                                    <p className="text-sm text-gray-600 mb-4">
+                                        This is the income used to calculate your runway,
+                                        safe-to-spend, and momentum.
+                                    </p>
+
+                                    <button
+                                        onClick={() => setView('dashboard')}
+                                        className="px-4 py-2 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold active:scale-95 transition"
+                                    >
+                                        ← Back to Home
+                                    </button>
+                                </div>
                             </div>
                         )}
 
