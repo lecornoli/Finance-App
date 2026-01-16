@@ -1987,9 +1987,9 @@
                                 <div className="bg-white rounded-3xl p-6 shadow-xl border-2 border-purple-100 max-w-md mx-auto mb-8 relative">
                                     <div className="text-xs font-semibold text-purple-600 mb-2">
                                         Kombucha — your financial coach
-                                        <p className="text-xs text-purple-500 mt-1">
-                                            I react to your behavior, not your goals.
-                                        </p>
+                                        <div className="mt-3 text-[11px] text-green-700 text-center">
+                                            No judgement. No scores. Just clarity.
+                                        </div>
 
                                     </div>
                                     <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-transparent border-b-white"></div>
@@ -2009,13 +2009,14 @@
                                 </div>
                                 <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/50 active:scale-95 transition-transform">
                                     <div className="text-2xl mb-2">📊</div>
-                                    <div className="text-sm text-gray-600 mb-1">Cash Buffer (No-Touchy)
+                                    <div className="text-sm text-gray-600 mb-1">Emergency Money
                                     </div>
                                     <div className="text-xl font-bold text-purple-600">{savingsRate.toFixed(0)}%</div>
                                 </div>
                                 <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/50 active:scale-95 transition-transform">
                                     <div className="text-2xl mb-2">🎯</div>
-                                    <div className="text-sm text-gray-600 mb-1">Monthly Net</div>
+                                    <div className="text-sm text-gray-600 mb-1">Money left after the usuals
+                                    </div>
                                     <div className={`text-xl font-bold ${monthlyNet >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>${monthlyNet.toLocaleString()}</div>
                                 </div>
                             </div>
@@ -2125,7 +2126,7 @@
 
                                             {wealth.monthsRunway > 0 && (
                                                 <div className="text-xs opacity-80">
-                                                    ≈ {wealth.monthsRunway} months of runway
+                                                    ≈ {wealth.monthsRunway} months of buffer
                                                 </div>
                                             )}
                                             <div className="text-xs font-semibold mt-1 text-gray-700">
@@ -2141,14 +2142,23 @@
                                                 {view === 'loans' && 'Loans'}
                                                 {view === 'advice' && 'Advice'}
 
-                                                {!['dashboard', 'income', 'expenses', 'logs', 'loans', 'advice'].includes(view) && (
-                                                    <div className="p-6 bg-red-100 border-2 border-red-300 rounded-xl">
-                                                        <h3 className="font-bold text-red-700">Unknown view</h3>
-                                                        <p className="text-sm text-red-600">
-                                                            Current view: <strong>{view}</strong>
-                                                        </p>
-                                                    </div>
-                                                )}
+                                                {![
+                                                    'dashboard',
+                                                    'income',
+                                                    'expenses',
+                                                    'logs',
+                                                    'loans',
+                                                    'advice',
+                                                    'net-insight',
+                                                    'buffer-insight'
+                                                ].includes(view) && (
+                                                        <div className="p-6 bg-red-100 border-2 border-red-300 rounded-xl">
+                                                            <h3 className="font-bold text-red-700">Unknown view</h3>
+                                                            <p className="text-sm text-red-600">
+                                                                Current view: <strong>{view}</strong>
+                                                            </p>
+                                                        </div>
+                                                    )}
 
 
                                             </div>
@@ -2291,7 +2301,7 @@
                                             <select value={newLoan.purpose} onChange={(e) => setNewLoan({ ...newLoan, purpose: e.target.value })}
                                                 className="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none">
                                                 <option value="debt-consolidation">Pay off CC debt</option>
-                                                <option value="emergency-buffer">Emergency buffer</option>
+                                                <option value="emergency-buffer">Only for bad days. Not for spending</option>
                                                 <option value="other">Other</option>
                                             </select>
                                         </div>
@@ -2444,26 +2454,42 @@
                                     </div>
 
 
-                                    <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-blue-100 active:scale-95 transition">
+                                    <div
+                                        onClick={() => setView('net-insight')}
+                                        className="bg-white rounded-2xl p-4 shadow-lg border-2 border-blue-100 active:scale-95 transition cursor-pointer"
+                                    >
                                         <div
-                                            onClick={() => setView(() => 'logs')}
+                                            onClick={() => setView(() => 'net-insight')}
                                             className="flex items-center justify-between mb-2">
-                                            <span className="text-gray-600 font-medium text-sm">Monthly Net</span>
+                                            <span className="text-gray-600 font-medium text-sm">Monthly Direction</span>
                                             <span className="text-xl">💰</span>
                                         </div>
                                         <div className={`text-2xl font-bold ${monthlyNet >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>${monthlyNet.toLocaleString()}</div>
+                                        <div className="text-xs mt-1 text-gray-500">
+                                            {monthlyNet > 0 && '📈 Your life is getting easier'}
+                                            {monthlyNet === 0 && '➖ You’re holding the line'}
+                                            {monthlyNet < 0 && '📉 This will wear you down over time'}
+                                        </div>
+
                                     </div>
 
 
-                                    <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-purple-100 active:scale-95 transition">
+                                    <div
+                                        onClick={() => setView('buffer-insight')}
+                                        className="bg-white rounded-2xl p-4 shadow-lg border-2 border-purple-100 active:scale-95 transition cursor-pointer"
+                                    >
                                         <div
-                                            onClick={() => setView(() => 'logs')}
+                                            onClick={() => setView(() => 'buffer-insight')}
                                             className="flex items-center justify-between mb-2">
-                                            <span className="text-gray-600 font-medium text-sm">Cash Buffer (No-Touchy)
+                                            <span className="text-gray-600 font-medium text-sm">Safety Money (Do Not Spend)
                                             </span>
                                             <span className="text-xl">🏦</span>
                                         </div>
                                         <div className="text-2xl font-bold text-purple-600">{savingsRate.toFixed(0)}%</div>
+                                        <div className="text-xs text-gray-500 mt-1">
+                                            {wealth.bufferProgress}% of 3-month safety buffer
+                                        </div>
+
                                     </div>
                                 </div>
 
@@ -2493,7 +2519,7 @@
                                         </h3>
 
                                         <p className="text-sm text-gray-600 mb-3">
-                                            Test a purchase before making it. Think in runway, not impulse.
+                                            Test a purchase before making it. Resist impulse.
                                         </p>
 
                                         <input
@@ -2795,6 +2821,147 @@
                                 </div>
                             </div>
                         )}
+                        {view === 'net-insight' && (
+                            <div className="space-y-4">
+                                <button
+                                    onClick={() => setView('dashboard')}
+                                    className="px-4 py-2 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold active:scale-95 transition"
+                                >
+                                    ← Back
+                                </button>
+
+                                <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-blue-100 text-center">
+                                    <div className="text-sm text-gray-500 mb-1">
+                                        Leftover This Month
+                                    </div>
+
+                                    <div className={`text-4xl font-bold ${monthlyNet >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>
+                                        ${monthlyNet.toLocaleString()}
+                                    </div>
+
+                                    <div className="text-sm text-gray-600 mt-2">
+                                        This shows whether your life is getting easier or harder each month.
+                                    </div>
+                                </div>
+
+                                <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-100">
+                                    <h3 className="font-bold text-gray-800 mb-3">
+                                        If you keep living like this
+                                    </h3>
+
+                                    <div className="space-y-2 text-sm">
+                                        <div>In 1 month → ${monthlyNet.toLocaleString()}</div>
+                                        <div>In 3 months → ${(monthlyNet * 3).toLocaleString()}</div>
+                                        <div>In 6 months → ${(monthlyNet * 6).toLocaleString()}</div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-100">
+                                    <h3 className="font-bold text-gray-800 mb-2">
+                                        How long your money can last
+                                    </h3>
+
+                                    <div className="text-sm text-gray-600">
+                                        You could live about <strong>{wealth.monthsRunway}</strong> more months without changing anything.
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={() => setView('advice')}
+                                    className="w-full py-4 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold active:scale-95 transition"
+                                >
+                                    Go to Advice →
+                                </button>
+                            </div>
+                        )}
+                        {view === 'buffer-insight' && (
+                            <div className="space-y-4">
+                                <button
+                                    onClick={() => setView('dashboard')}
+                                    className="px-4 py-2 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold active:scale-95 transition"
+                                >
+                                    ← Back
+                                </button>
+
+                                <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-purple-100 text-center">
+                                    <div className="text-sm text-gray-500 mb-1">
+                                        Emergency Money - Do Not Touch
+                                    </div>
+
+                                    <div className="text-4xl font-bold text-purple-600">
+                                        ${savings.toLocaleString()}
+                                    </div>
+                                    <div className="text-xs mt-1 text-gray-500">
+                                        {wealth.monthsRunway >= 3 && '🟢 You’re safe'}
+                                        {wealth.monthsRunway >= 1 && wealth.monthsRunway < 3 && '🟡 You’re exposed'}
+                                        {wealth.monthsRunway < 1 && '🔴 You’re at risk'}
+                                    </div>
+
+                                    <div className="text-sm text-gray-600 mt-2">
+                                        Money you should not touch unless out of options
+                                    </div>
+                                </div>
+                                <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-100">
+                                    <h3 className="font-bold text-gray-800 mb-3">
+                                        Adjust buffer amount
+                                    </h3>
+
+                                    <p className="text-sm text-gray-600 mb-3">
+                                        Only change this when you intentionally move money
+                                        into or out of your safety buffer.
+                                    </p>
+
+                                    <input
+                                        type="number"
+                                        value={savings}
+                                        onChange={(e) => setSavings(Number(e.target.value) || 0)}
+                                        className="w-full p-4 text-xl font-bold text-purple-600 rounded-2xl border-2 border-purple-200 focus:outline-none focus:border-purple-400 mb-3"
+                                    />
+
+                                    <div className="text-xs text-gray-500">
+                                        This does not log spending. It redefines your protected cash.
+                                    </div>
+                                </div>
+
+                                <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-100">
+                                    <h3 className="font-bold text-gray-800 mb-2">
+                                        This covers about
+                                    </h3>
+
+
+                                    <div className="text-xl font-bold text-purple-600 mt-2">
+                                        You can survive about {wealth.monthsRunway} months
+                                    </div>
+                                    <div className="text-sm text-gray-600 mt-1">
+                                        If income becomes RM0 tomorrow
+                                    </div>
+
+                                </div>
+
+                                <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-100">
+                                    <h3 className="font-bold text-gray-800 mb-3">
+                                        Buffer progress
+                                    </h3>
+
+                                    <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                                        <div
+                                            className="h-full bg-gradient-to-r from-purple-400 to-pink-400 transition-all"
+                                            style={{ width: `${wealth.bufferProgress}%` }}
+                                        />
+                                    </div>
+
+                                    <div className="text-sm text-gray-600 mt-2">
+                                        {wealth.bufferProgress}% of a 3-month safety net
+                                    </div>
+                                </div>
+
+                                <div className="bg-purple-50 border-2 border-purple-200 rounded-2xl p-4 text-sm text-purple-700">
+                                    Rule: touching this makes life riskier later.
+                                </div>
+                            </div>
+                        )}
+
+
                     </div>
                 </div>
             );
