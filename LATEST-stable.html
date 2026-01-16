@@ -994,7 +994,7 @@
         }
     </script>
 
-    <script type="text/babel" data-presets="react">
+    <script type="text/babel">
         const { useState, useEffect } = React;
         // 🔧 Emoji-based icon shims (lucide-react replacement)
         const Sparkles = ({ className }) => <Icon className={className}>✨</Icon>;
@@ -1181,12 +1181,11 @@
             };
 
             useEffect(() => {
-                saveExpenses();
+                if (expenses.length > 0) {
+                    saveExpenses();
+                    updateUserPatterns();
+                }
             }, [expenses]);
-
-            useEffect(() => {
-                updateUserPatterns();
-            }, [expenses.length]);
 
             useEffect(() => { savePatterns(); }, [userPatterns]);
             useEffect(() => { saveLoans(); }, [loans]);
@@ -1199,23 +1198,17 @@
             const handleNext = () => {
                 if (!canProceed) return;
 
+                // soft tap sound for every step
                 playSound('tap');
 
-                setOnboardingStep(prev => {
-                    if (prev >= onboardingQuestions.length - 1) {
-                        playSound('success');
-                        completeOnboarding();
-                        return prev; // DO NOT increment
-                    }
-                    return prev + 1;
-                });
-            };
-            useEffect(() => {
-                if (onboardingStep >= onboardingQuestions.length) {
-                    console.warn('Clamping onboarding step:', onboardingStep);
-                    setOnboardingStep(onboardingQuestions.length - 1);
+                if (onboardingStep < 5) {
+                    setOnboardingStep(prev => prev + 1);
+                } else {
+                    // warm completion sound
+                    playSound('success');
+                    completeOnboarding();
                 }
-            }, [onboardingStep]);
+            };
 
 
             useEffect(() => {
@@ -1325,7 +1318,7 @@
             const totalLoanPayments = loans.reduce((sum, l) => sum + l.monthlyPayment, 0);
             const ccMinPayment = creditCardDebt > 0 ? Math.max(creditCardDebt * 0.02, 25) : 0;
             const totalDebtPayments = totalLoanPayments + ccMinPayment;
-            const monthlyNet = income - totalExpenses - totalDebtPayments;
+            const monthlyNet = income - totalExpenses;
             const safeToSpend = Math.round(
                 (monthlyNet || 0) - (totalDebtPayments || 0)
             );
@@ -1456,7 +1449,7 @@
                 if (savingsRate > 20) {
                     adviceList.push({
                         emoji: '🎉',
-                        text: `${savingsRate.toFixed(0)}Protected cash. Not for spending.`,
+                        text: `${savingsRate.toFixed(0)}% savings rate? You're crushing it! Keep it up!`,
                         tone: 'celebration'
                     });
                 }
@@ -1498,13 +1491,7 @@
                 return adviceList[Math.floor(Math.random() * adviceList.length)];
             };
 
-            let advice = { emoji: '💭', text: 'Loading advice…' };
-
-            try {
-                advice = getPersonalizedAdvice() || advice;
-            } catch (e) {
-                console.warn('Advice engine error:', e);
-            }
+            const advice = getPersonalizedAdvice();
 
             const getAvatarMood = () => {
                 if (spendingStatus === 'overspent') return 'worried';
@@ -1576,9 +1563,6 @@
             const KombuchaBottle = ({ mood, isHovering, isPetting }) => {
                 const colors = getBottleColor();
                 const [bubblePhase, setBubblePhase] = useState(0);
-                useEffect(() => {
-                    console.log('FinanceApp render OK');
-                }, []);
 
                 useEffect(() => {
                     const interval = setInterval(() => {
@@ -1767,6 +1751,7 @@
                     subtitle: "Let's get to know each other! ✨",
                     field: (
                         <input type="text" placeholder="Enter your name..." value={userName} onChange={(e) => setUserName(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && canProceed && handleNext()}
                             className="w-full p-4 text-lg rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none bg-white shadow-sm transition-all" autoFocus />
                     )
                 },
@@ -1775,6 +1760,7 @@
                     subtitle: "This helps us understand your cash flow 💰",
                     field: (
                         <input type="number" placeholder="e.g., 5000" value={income || ''} onChange={(e) => setIncome(parseFloat(e.target.value) || 0)}
+                            onKeyPress={(e) => e.key === 'Enter' && canProceed && handleNext()}
                             className="w-full p-4 text-lg rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none bg-white shadow-sm transition-all" autoFocus />
                     )
                 },
@@ -1783,6 +1769,7 @@
                     subtitle: "Just your checking/savings total 🏦",
                     field: (
                         <input type="number" placeholder="e.g., 10000" value={bankBalance || ''} onChange={(e) => setBankBalance(parseFloat(e.target.value) || 0)}
+                            onKeyPress={(e) => e.key === 'Enter' && canProceed && handleNext()}
                             className="w-full p-4 text-lg rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none bg-white shadow-sm transition-all" autoFocus />
                     )
                 },
@@ -1791,6 +1778,7 @@
                     subtitle: "It's okay, we're here to help! 💳",
                     field: (
                         <input type="number" placeholder="e.g., 0 (enter 0 if none)" value={creditCardDebt || ''} onChange={(e) => setCreditCardDebt(parseFloat(e.target.value) || 0)}
+                            onKeyPress={(e) => e.key === 'Enter' && canProceed && handleNext()}
                             className="w-full p-4 text-lg rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none bg-white shadow-sm transition-all" autoFocus />
                     )
                 },
@@ -1812,18 +1800,14 @@
                     subtitle: "Your savings/investments combined 🌱",
                     field: (
                         <input type="number" placeholder="e.g., 1000" value={savings || ''} onChange={(e) => setSavings(parseFloat(e.target.value) || 0)}
+                            onKeyPress={(e) => e.key === 'Enter' && canProceed && handleNext()}
                             className="w-full p-4 text-lg rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none bg-white shadow-sm transition-all" autoFocus />
                     )
                 }
             ];
 
             if (isFirstTime) {
-                const currentQuestion = onboardingQuestions[onboardingStep] || null;
-
-                if (!currentQuestion) {
-                    console.warn('Invalid onboarding step render:', onboardingStep);
-                    return null;
-                }
+                const currentQuestion = onboardingQuestions[onboardingStep];
                 const progress = ((onboardingStep + 1) / onboardingQuestions.length) * 100;
 
                 return (
@@ -1987,10 +1971,6 @@
                                 <div className="bg-white rounded-3xl p-6 shadow-xl border-2 border-purple-100 max-w-md mx-auto mb-8 relative">
                                     <div className="text-xs font-semibold text-purple-600 mb-2">
                                         Kombucha — your financial coach
-                                        <p className="text-xs text-purple-500 mt-1">
-                                            I react to your behavior, not your goals.
-                                        </p>
-
                                     </div>
                                     <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-transparent border-b-white"></div>
                                     <div className="space-y-3">
@@ -2009,8 +1989,7 @@
                                 </div>
                                 <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/50 active:scale-95 transition-transform">
                                     <div className="text-2xl mb-2">📊</div>
-                                    <div className="text-sm text-gray-600 mb-1">Cash Buffer (No-Touchy)
-                                    </div>
+                                    <div className="text-sm text-gray-600 mb-1">Savings Rate</div>
                                     <div className="text-xl font-bold text-purple-600">{savingsRate.toFixed(0)}%</div>
                                 </div>
                                 <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/50 active:scale-95 transition-transform">
@@ -2071,16 +2050,6 @@
                             : 'bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50'
                         }`}
                 >
-                    <div style={{
-                        position: 'fixed',
-                        bottom: 8,
-                        right: 8,
-                        fontSize: 10,
-                        opacity: 0.4
-                    }}>
-                        🟢 React alive
-                    </div>
-
                     <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&family=Nunito:wght@300;400;600;700;800&display=swap');
         * { 
@@ -2132,23 +2101,10 @@
                                                 {phaseThemes[wealthPhase].label}
                                             </div>
 
-                                            <div className="text-[10px] text-gray-400 mt-1">
-                                                VIEW: {view}
-                                            </div>
-
                                             <div className="text-[10px] font-bold uppercase tracking-wide text-gray-500 mt-1">
                                                 {view === 'dashboard' && 'Home'}
                                                 {view === 'loans' && 'Loans'}
                                                 {view === 'advice' && 'Advice'}
-
-                                                {!['dashboard', 'income', 'expenses', 'logs', 'loans', 'advice'].includes(view) && (
-                                                    <div className="p-6 bg-red-100 border-2 border-red-300 rounded-xl">
-                                                        <h3 className="font-bold text-red-700">Unknown view</h3>
-                                                        <p className="text-sm text-red-600">
-                                                            Current view: <strong>{view}</strong>
-                                                        </p>
-                                                    </div>
-                                                )}
 
 
                                             </div>
@@ -2423,7 +2379,7 @@
 
 
                                     <div
-                                        onClick={() => setView(() => 'income')}
+                                        onClick={() => setView('income')}
                                         className="bg-white rounded-2xl p-4 shadow-lg border-2 border-green-100 active:scale-95 transition">
                                         <div className="flex items-center justify-between mb-2">
                                             <span className="text-gray-600 font-medium text-sm">Income</span>
@@ -2434,7 +2390,7 @@
 
 
                                     <div
-                                        onClick={() => setView(() => 'expenses')}
+                                        onClick={() => setView('expenses')}
                                         className="bg-white rounded-2xl p-4 shadow-lg border-2 border-red-100 active:scale-95 transition">
                                         <div className="flex items-center justify-between mb-2">
                                             <span className="text-gray-600 font-medium text-sm">Expenses</span>
@@ -2446,7 +2402,7 @@
 
                                     <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-blue-100 active:scale-95 transition">
                                         <div
-                                            onClick={() => setView(() => 'logs')}
+                                            onClick={() => setView('logs')}
                                             className="flex items-center justify-between mb-2">
                                             <span className="text-gray-600 font-medium text-sm">Monthly Net</span>
                                             <span className="text-xl">💰</span>
@@ -2457,10 +2413,9 @@
 
                                     <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-purple-100 active:scale-95 transition">
                                         <div
-                                            onClick={() => setView(() => 'logs')}
+                                            onClick={() => setView('logs')}
                                             className="flex items-center justify-between mb-2">
-                                            <span className="text-gray-600 font-medium text-sm">Cash Buffer (No-Touchy)
-                                            </span>
+                                            <span className="text-gray-600 font-medium text-sm">Savings</span>
                                             <span className="text-xl">🏦</span>
                                         </div>
                                         <div className="text-2xl font-bold text-purple-600">{savingsRate.toFixed(0)}%</div>
@@ -2538,7 +2493,7 @@
                                     <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-gray-100">
                                         <h3 className="text-lg font-bold mb-3 text-gray-800">Recent Activity</h3>
                                         <button
-                                            onClick={() => setView(() => 'logs')}
+                                            onClick={() => setView('logs')}
                                             className="text-sm text-purple-600 font-semibold mb-2 active:underline"
                                         >
                                             View all logs →
@@ -2601,7 +2556,8 @@
                                         className="w-full p-4 text-3xl font-bold text-green-600 rounded-2xl border-2 border-green-200 focus:outline-none focus:border-green-400 mb-4"
                                     />
                                     <p className="text-sm text-gray-600">
-                                        This is an estimate. Update anytime — no pressure.
+                                        Adjust this anytime if your income changes.
+                                        The app always uses your latest estimate for calculations.
                                     </p>
 
 
@@ -2611,7 +2567,7 @@
                                     </p>
 
                                     <button
-                                        onClick={() => setView(() => 'dashboard')}
+                                        onClick={() => setView('dashboard')}
                                         className="px-4 py-2 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold active:scale-95 transition"
                                     >
                                         ← Back to Home
@@ -2719,7 +2675,7 @@
                                 </h3>
 
                                 <p className="text-sm text-gray-600 mb-4">
-                                    Real money that left your account. Mistakes can be edited.
+                                    Money that left your account this month.
                                 </p>
 
                                 {expenses.filter(e => e.amount > 0).length === 0 ? (
@@ -2801,29 +2757,7 @@
         };
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
-
-        try {
-            root.render(<FinanceApp />);
-        } catch (err) {
-            console.error(err);
-            document.getElementById('root').innerHTML = `
-        <div style="
-            padding: 24px;
-            font-family: system-ui, sans-serif;
-            color: #111;
-        ">
-            <h2>⚠️ App crashed</h2>
-            <p>The app hit an error instead of going blank.</p>
-            <pre style="
-                background:#f3f4f6;
-                padding:12px;
-                border-radius:8px;
-                overflow:auto;
-            ">${err}</pre>
-        </div>
-    `;
-        }
-
+        root.render(<FinanceApp />);
     </script>
 </body>
 
