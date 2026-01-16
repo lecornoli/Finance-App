@@ -1042,7 +1042,59 @@
         Object.values(sounds).forEach(sound => {
             sound.volume = 0.25;
         });
+        const getPersonalizedAdvice = () => {
+            const adviceList = [];
+            // Wealth lens: framing money as time & freedom
+            const wealthLens = (amount) => {
+                if (income <= 0) return null;
+                const days = Math.round(amount / (income / 30));
+                return days;
+            };
 
+            const phasePreface =
+                wealthPhase === 'survive'
+                    ? 'Right now, the goal is stability. '
+                    : wealthPhase === 'stabilize'
+                        ? 'You’re building momentum. '
+                        : 'You’re in a position to think strategically. ';
+
+            if (expenses.length > 0) {
+                const lastExpense = expenses[expenses.length - 1];
+                const daysLost = wealthLens(lastExpense.amount);
+                if (daysLost && daysLost >= 1) {
+                    adviceList.push({
+                        emoji: '⏳',
+                        text: `${phasePreface}That RM${lastExpense.amount} cost you about ${daysLost} days of future freedom.`,
+                    });
+                }
+            }
+
+            if (creditCardDebt > 0 && loans.length === 0) {
+                adviceList.push({
+                    emoji: '💡',
+                    text: `You have credit card debt. Reducing interest should be a priority.`,
+                });
+            }
+
+            if (safeToSpend < 100 && safeToSpend >= 0) {
+                adviceList.push({
+                    emoji: '⚠️',
+                    text: `You have very little safe spending left this month.`,
+                });
+            }
+
+            if (adviceList.length === 0) {
+                adviceList.push({
+                    emoji: '✨',
+                    text: `You're doing fine. Keep tracking consistently.`,
+                });
+            }
+
+            return adviceList[Math.floor(Math.random() * adviceList.length)];
+
+
+
+        };
         const FinanceApp = () => {
 
             const [soundEnabled, setSoundEnabled] = useState(true);
@@ -1400,59 +1452,7 @@
                 : null;
 
             // Smart, personalized advice based on user behavior
-            const getPersonalizedAdvice = () => {
-                const adviceList = [];
-                // Wealth lens: framing money as time & freedom
-                const wealthLens = (amount) => {
-                    if (income <= 0) return null;
-                    const days = Math.round(amount / (income / 30));
-                    return days;
-                };
 
-                const phasePreface =
-                    wealthPhase === 'survive'
-                        ? 'Right now, the goal is stability. '
-                        : wealthPhase === 'stabilize'
-                            ? 'You’re building momentum. '
-                            : 'You’re in a position to think strategically. ';
-
-                if (expenses.length > 0) {
-                    const lastExpense = expenses[expenses.length - 1];
-                    const daysLost = wealthLens(lastExpense.amount);
-                    if (daysLost && daysLost >= 1) {
-                        adviceList.push({
-                            emoji: '⏳',
-                            text: `${phasePreface}That RM${lastExpense.amount} cost you about ${daysLost} days of future freedom.`,
-                        });
-                    }
-                }
-
-                if (creditCardDebt > 0 && loans.length === 0) {
-                    adviceList.push({
-                        emoji: '💡',
-                        text: `You have credit card debt. Reducing interest should be a priority.`,
-                    });
-                }
-
-                if (safeToSpend < 100 && safeToSpend >= 0) {
-                    adviceList.push({
-                        emoji: '⚠️',
-                        text: `You have very little safe spending left this month.`,
-                    });
-                }
-
-                if (adviceList.length === 0) {
-                    adviceList.push({
-                        emoji: '✨',
-                        text: `You're doing fine. Keep tracking consistently.`,
-                    });
-                }
-
-                return adviceList[Math.floor(Math.random() * adviceList.length)];
-
-
-
-            };
             if (isFirstTime) {
                 const currentQuestion = onboardingQuestions[onboardingStep];
                 const progress = ((onboardingStep + 1) / onboardingQuestions.length) * 100;
