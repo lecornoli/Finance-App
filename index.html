@@ -1136,7 +1136,7 @@
             useEffect(() => {
                 switch (onboardingStep) {
                     case 0: setCanProceed(userName.trim().length > 0); break;
-                    case 1: setCanProceed(income > 0); break;
+                    case 1: setCanProceed(true); break;
                     case 2: setCanProceed(bankBalance >= 0); break;
                     case 3: setCanProceed(creditCardDebt >= 0); break;
                     case 4: setCanProceed(true); break; // Skip loans in onboarding
@@ -1317,7 +1317,7 @@
 
 
             };
-
+            const advice = getPersonalizedAdvice();
             // Calculations
             const currentMonthKey = new Date().toISOString().slice(0, 7); // YYYY-MM
             const currentIncomeEntry = incomeLogs.find(
@@ -1448,17 +1448,17 @@
                 }
 
                 return adviceList[Math.floor(Math.random() * adviceList.length)];
+
+
+
             };
+            if (isFirstTime) {
+                const currentQuestion = onboardingQuestions[onboardingStep];
+                const progress = ((onboardingStep + 1) / onboardingQuestions.length) * 100;
 
-
-        };
-        if (isFirstTime) {
-            const currentQuestion = onboardingQuestions[onboardingStep];
-            const progress = ((onboardingStep + 1) / onboardingQuestions.length) * 100;
-
-            return (
-                <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 flex items-center justify-center p-4" style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none' }}>
-                    <style>{`
+                return (
+                    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 flex items-center justify-center p-4" style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none' }}>
+                        <style>{`
           @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&family=Nunito:wght@300;400;600;700;800&display=swap');
           * { 
             font-family: 'Nunito', sans-serif;
@@ -1470,63 +1470,63 @@
           input { font-size: 16px !important; }
         `}</style>
 
-                    <div className="max-w-md w-full">
-                        <div className="mb-8">
-                            <div className="h-2 bg-white/50 rounded-full overflow-hidden backdrop-blur-sm">
-                                <div className="h-full bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-500 ease-out" style={{ width: `${progress}%` }}></div>
-                            </div>
-                            <div className="text-center mt-2 text-sm text-purple-600 font-medium">Step {onboardingStep + 1} of {onboardingQuestions.length}</div>
-                        </div>
-
-                        <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl p-8 border border-white/50">
-                            <div className="text-center mb-8">
-                                <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
-                                    <span className="text-4xl">✨</span>
+                        <div className="max-w-md w-full">
+                            <div className="mb-8">
+                                <div className="h-2 bg-white/50 rounded-full overflow-hidden backdrop-blur-sm">
+                                    <div className="h-full bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-500 ease-out" style={{ width: `${progress}%` }}></div>
                                 </div>
-                                <h2 className="text-3xl font-bold text-gray-800 mb-2">{currentQuestion.title}</h2>
-                                <p className="text-gray-600">{currentQuestion.subtitle}</p>
+                                <div className="text-center mt-2 text-sm text-purple-600 font-medium">Step {onboardingStep + 1} of {onboardingQuestions.length}</div>
                             </div>
 
-                            <div className="mb-6">{currentQuestion.field}</div>
-
-                            {onboardingStep !== 4 && (
-                                <div className="mb-6 text-center">
-                                    {canProceed ? (
-                                        <p className="text-sm text-green-600 font-medium">✓ Press Enter or tap Next</p>
-                                    ) : (
-                                        <p className="text-sm text-gray-500 pulse-animation">👆 Fill in the field above</p>
-                                    )}
+                            <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl p-8 border border-white/50">
+                                <div className="text-center mb-8">
+                                    <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
+                                        <span className="text-4xl">✨</span>
+                                    </div>
+                                    <h2 className="text-3xl font-bold text-gray-800 mb-2">{currentQuestion.title}</h2>
+                                    <p className="text-gray-600">{currentQuestion.subtitle}</p>
                                 </div>
-                            )}
 
-                            {onboardingStep !== 4 && (
-                                <div className="flex gap-3">
-                                    {onboardingStep > 0 && (
-                                        <button onClick={() => setOnboardingStep(prev => prev - 1)}
-                                            className="flex-1 py-4 rounded-2xl border-2 border-gray-200 text-gray-600 font-semibold active:bg-gray-100 transition">
-                                            ← Back
+                                <div className="mb-6">{currentQuestion.field}</div>
+
+                                {onboardingStep !== 4 && (
+                                    <div className="mb-6 text-center">
+                                        {canProceed ? (
+                                            <p className="text-sm text-green-600 font-medium">✓ Press Enter or tap Next</p>
+                                        ) : (
+                                            <p className="text-sm text-gray-500 pulse-animation">👆 Fill in the field above</p>
+                                        )}
+                                    </div>
+                                )}
+
+                                {onboardingStep !== 4 && (
+                                    <div className="flex gap-3">
+                                        {onboardingStep > 0 && (
+                                            <button onClick={() => setOnboardingStep(prev => prev - 1)}
+                                                className="flex-1 py-4 rounded-2xl border-2 border-gray-200 text-gray-600 font-semibold active:bg-gray-100 transition">
+                                                ← Back
+                                            </button>
+                                        )}
+                                        <button onClick={handleNext} disabled={!canProceed}
+                                            className={`flex-1 py-4 rounded-2xl font-semibold transition shadow-lg active:scale-95 flex items-center justify-center gap-2 ${canProceed ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white active:from-purple-600 active:to-pink-600' : 'bg-gray-200 text-gray-400'
+                                                }`}>
+                                            {onboardingStep < onboardingQuestions.length - 1 ? (<>Next <ArrowRight className="w-5 h-5" /></>) : (<>Let's Go! <Star className="w-5 h-5" /></>)}
                                         </button>
-                                    )}
-                                    <button onClick={handleNext} disabled={!canProceed}
-                                        className={`flex-1 py-4 rounded-2xl font-semibold transition shadow-lg active:scale-95 flex items-center justify-center gap-2 ${canProceed ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white active:from-purple-600 active:to-pink-600' : 'bg-gray-200 text-gray-400'
-                                            }`}>
-                                        {onboardingStep < onboardingQuestions.length - 1 ? (<>Next <ArrowRight className="w-5 h-5" /></>) : (<>Let's Go! <Star className="w-5 h-5" /></>)}
-                                    </button>
-                                </div>
-                            )}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
-                </div>
-            );
-        }
+                );
+            }
 
-        if (showLanding) {
-            const messages = getAvatarMessage();
-            const mood = getAvatarMood();
+            if (showLanding) {
+                const messages = getAvatarMessage();
+                const mood = getAvatarMood();
 
-            return (
-                <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 flex items-center justify-center p-4" style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none' }}>
-                    <style>{`
+                return (
+                    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 flex items-center justify-center p-4" style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none' }}>
+                        <style>{`
           @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&family=Nunito:wght@300;400;600;700;800&display=swap');
           * { 
             font-family: 'Nunito', sans-serif;
@@ -1541,162 +1541,162 @@
           .heart-float { animation: floatHearts 2s ease-out forwards; }
         `}</style>
 
-                    <div className="max-w-2xl w-full text-center">
-                        {/* Safe to Spend Banner */}
-                        <div className={`mb-6 p-4 rounded-2xl ${spendingStatus === 'safe' ? 'bg-green-100 border-2 border-green-300' :
-                            spendingStatus === 'caution' ? 'bg-yellow-100 border-2 border-yellow-300' :
-                                'bg-red-100 border-2 border-red-300'
-                            }`}>
-                            <div className="flex items-center justify-center gap-2">
-                                {spendingStatus === 'safe' && <CheckCircle className="w-5 h-5 text-green-600" />}
-                                {spendingStatus === 'caution' && <Info className="w-5 h-5 text-yellow-600" />}
-                                {spendingStatus === 'overspent' && <AlertTriangle className="w-5 h-5 text-red-600" />}
-                                <div className="text-left flex-1">
-                                    <div className={`font-bold text-sm ${spendingStatus === 'safe' ? 'text-green-700' :
-                                        spendingStatus === 'caution' ? 'text-yellow-700' :
-                                            'text-red-700'
-                                        }`}>
-                                        {spendingStatus === 'safe' && 'Safe to spend - Won’t break Cash Buffer'}
-                                        {spendingStatus === 'caution' && 'Spend carefully'}
-                                        {spendingStatus === 'overspent' && '⚠️ Buffer at risk'}
-                                    </div>
-                                    <div className={`text-2xl font-bold ${spendingStatus === 'safe' ? 'text-green-600' :
-                                        spendingStatus === 'caution' ? 'text-yellow-600' :
-                                            'text-red-600'
-                                        }`}>
-                                        ${Math.abs(safeToSpend).toLocaleString()}
-                                        {spendingStatus === 'overspent' && ' over'}
-                                        <div className="text-xs opacity-70 mt-1">
-                                            Spending above this breaks your Cash Buffer
+                        <div className="max-w-2xl w-full text-center">
+                            {/* Safe to Spend Banner */}
+                            <div className={`mb-6 p-4 rounded-2xl ${spendingStatus === 'safe' ? 'bg-green-100 border-2 border-green-300' :
+                                spendingStatus === 'caution' ? 'bg-yellow-100 border-2 border-yellow-300' :
+                                    'bg-red-100 border-2 border-red-300'
+                                }`}>
+                                <div className="flex items-center justify-center gap-2">
+                                    {spendingStatus === 'safe' && <CheckCircle className="w-5 h-5 text-green-600" />}
+                                    {spendingStatus === 'caution' && <Info className="w-5 h-5 text-yellow-600" />}
+                                    {spendingStatus === 'overspent' && <AlertTriangle className="w-5 h-5 text-red-600" />}
+                                    <div className="text-left flex-1">
+                                        <div className={`font-bold text-sm ${spendingStatus === 'safe' ? 'text-green-700' :
+                                            spendingStatus === 'caution' ? 'text-yellow-700' :
+                                                'text-red-700'
+                                            }`}>
+                                            {spendingStatus === 'safe' && 'Safe to spend - Won’t break Cash Buffer'}
+                                            {spendingStatus === 'caution' && 'Spend carefully'}
+                                            {spendingStatus === 'overspent' && '⚠️ Buffer at risk'}
                                         </div>
-                                        {wealth.monthsRunway > 0 && (
-                                            <div className="text-xs opacity-80">
-                                                ≈ {wealth.monthsRunway} months of runway
+                                        <div className={`text-2xl font-bold ${spendingStatus === 'safe' ? 'text-green-600' :
+                                            spendingStatus === 'caution' ? 'text-yellow-600' :
+                                                'text-red-600'
+                                            }`}>
+                                            ${Math.abs(safeToSpend).toLocaleString()}
+                                            {spendingStatus === 'overspent' && ' over'}
+                                            <div className="text-xs opacity-70 mt-1">
+                                                Spending above this breaks your Cash Buffer
                                             </div>
-                                        )}
-                                        <div className="text-xs font-semibold mt-1 text-gray-700">
-                                            {phaseThemes[wealthPhase].label}
-                                        </div>
+                                            {wealth.monthsRunway > 0 && (
+                                                <div className="text-xs opacity-80">
+                                                    ≈ {wealth.monthsRunway} months of runway
+                                                </div>
+                                            )}
+                                            <div className="text-xs font-semibold mt-1 text-gray-700">
+                                                {phaseThemes[wealthPhase].label}
+                                            </div>
 
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div className="mb-8 relative">
-                            <div onClick={petAvatar} onTouchStart={() => setIsHovering(true)} onTouchEnd={() => setIsHovering(false)}
-                                className="w-64 h-64 mx-auto mb-6 cursor-pointer relative active:scale-95 transition-transform" style={{ userSelect: 'none' }}>
-                                <div className="absolute inset-0 bg-white rounded-full shadow-2xl"></div>
-                                <div className="relative z-10 p-8">
-                                    <KombuchaBottle mood={mood} isHovering={isHovering} isPetting={isPetting} />
+                            <div className="mb-8 relative">
+                                <div 
+                                    className="w-64 h-64 mx-auto mb-6 cursor-pointer relative active:scale-95 transition-transform" style={{ userSelect: 'none' }}>
+                                    <div className="absolute inset-0 bg-white rounded-full shadow-2xl"></div>
+                                    <div className="relative z-10 p-8">
+                                        <KombuchaBottle mood={mood} isHovering={isHovering} isPetting={isPetting} />
+                                    </div>
+
+                                    {showHearts && (
+                                        <div className="absolute inset-0 pointer-events-none">
+                                            {[...Array(5)].map((_, i) => (
+                                                <div key={i} className="absolute heart-float" style={{ left: `${30 + i * 10}%`, bottom: '50%', animationDelay: `${i * 0.2}s` }}>
+                                                    <Heart className="w-6 h-6 text-pink-500 fill-pink-500" />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {userInteraction > 0 && (
+                                        <div className="absolute top-0 right-0 w-14 h-14 bg-gradient-to-br from-pink-400 to-red-400 rounded-full flex items-center justify-center text-white font-bold shadow-lg z-20 transition-transform duration-300"
+                                            style={{ transform: isPetting ? 'scale(1.2)' : 'scale(1)' }}>
+                                            <div className="text-center">
+                                                <Heart className="w-6 h-6 fill-current mx-auto" />
+                                                <div className="text-xs mt-0.5">{userInteraction}</div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
-                                {showHearts && (
-                                    <div className="absolute inset-0 pointer-events-none">
-                                        {[...Array(5)].map((_, i) => (
-                                            <div key={i} className="absolute heart-float" style={{ left: `${30 + i * 10}%`, bottom: '50%', animationDelay: `${i * 0.2}s` }}>
-                                                <Heart className="w-6 h-6 text-pink-500 fill-pink-500" />
-                                            </div>
+                                <p className="text-sm text-gray-500 mb-2">👆 Tap me for good vibes!</p>
+
+                                <div className="bg-white rounded-3xl p-6 shadow-xl border-2 border-purple-100 max-w-md mx-auto mb-8 relative">
+                                    <div className="text-xs font-semibold text-purple-600 mb-2">
+                                        Kombucha — your financial coach
+                                    </div>
+                                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-transparent border-b-white"></div>
+                                    <div className="space-y-3">
+                                        {messages.map((msg, i) => (
+                                            <p key={i} className="text-gray-700 font-medium text-lg">{msg}</p>
                                         ))}
                                     </div>
-                                )}
-
-                                {userInteraction > 0 && (
-                                    <div className="absolute top-0 right-0 w-14 h-14 bg-gradient-to-br from-pink-400 to-red-400 rounded-full flex items-center justify-center text-white font-bold shadow-lg z-20 transition-transform duration-300"
-                                        style={{ transform: isPetting ? 'scale(1.2)' : 'scale(1)' }}>
-                                        <div className="text-center">
-                                            <Heart className="w-6 h-6 fill-current mx-auto" />
-                                            <div className="text-xs mt-0.5">{userInteraction}</div>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-
-                            <p className="text-sm text-gray-500 mb-2">👆 Tap me for good vibes!</p>
-
-                            <div className="bg-white rounded-3xl p-6 shadow-xl border-2 border-purple-100 max-w-md mx-auto mb-8 relative">
-                                <div className="text-xs font-semibold text-purple-600 mb-2">
-                                    Kombucha — your financial coach
-                                </div>
-                                <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-transparent border-b-white"></div>
-                                <div className="space-y-3">
-                                    {messages.map((msg, i) => (
-                                        <p key={i} className="text-gray-700 font-medium text-lg">{msg}</p>
-                                    ))}
                                 </div>
                             </div>
-                        </div>
 
-                        <div className="grid grid-cols-3 gap-4 mb-8">
-                            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/50 active:scale-95 transition-transform">
-                                <div className="text-2xl mb-2">💰</div>
-                                <div className="text-sm text-gray-600 mb-1">Net Worth</div>
-                                <div className={`text-xl font-bold ${netWorth >= 0 ? 'text-green-600' : 'text-red-600'}`}>${netWorth.toLocaleString()}</div>
+                            <div className="grid grid-cols-3 gap-4 mb-8">
+                                <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/50 active:scale-95 transition-transform">
+                                    <div className="text-2xl mb-2">💰</div>
+                                    <div className="text-sm text-gray-600 mb-1">Net Worth</div>
+                                    <div className={`text-xl font-bold ${netWorth >= 0 ? 'text-green-600' : 'text-red-600'}`}>${netWorth.toLocaleString()}</div>
+                                </div>
+                                <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/50 active:scale-95 transition-transform">
+                                    <div className="text-2xl mb-2">📊</div>
+                                    <div className="text-sm text-gray-600 mb-1">Savings Rate</div>
+                                    <div className="text-xl font-bold text-purple-600">{cashBufferRate.toFixed(0)}%</div>
+                                </div>
+                                <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/50 active:scale-95 transition-transform">
+                                    <div className="text-2xl mb-2">🎯</div>
+                                    <div className="text-sm text-gray-600 mb-1">Monthly Net</div>
+                                    <div className={`text-xl font-bold ${monthlyNet >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>${monthlyNet.toLocaleString()}</div>
+                                </div>
                             </div>
-                            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/50 active:scale-95 transition-transform">
-                                <div className="text-2xl mb-2">📊</div>
-                                <div className="text-sm text-gray-600 mb-1">Savings Rate</div>
-                                <div className="text-xl font-bold text-purple-600">{cashBufferRate.toFixed(0)}%</div>
-                            </div>
-                            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/50 active:scale-95 transition-transform">
-                                <div className="text-2xl mb-2">🎯</div>
-                                <div className="text-sm text-gray-600 mb-1">Monthly Net</div>
-                                <div className={`text-xl font-bold ${monthlyNet >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>${monthlyNet.toLocaleString()}</div>
-                            </div>
-                        </div>
 
-                        <div className="space-y-3 mb-8">
-                            <button onClick={() => setShowLanding(false)}
-                                className="w-full py-5 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold text-lg active:from-purple-600 active:to-pink-600 active:scale-95 transition shadow-xl flex items-center justify-center gap-3">
-                                Let's Build Wealth Today! <ChevronRight className="w-6 h-6" />
-                            </button>
-
-                            <div className="grid grid-cols-2 gap-3">
-                                <button onClick={() => {
-                                    playSound('tap');
-                                    setShowLanding(false);
-                                    setView('advice');
-                                }}
-                                    className="py-4 rounded-2xl bg-white/80 backdrop-blur-sm border-2 border-purple-200 text-purple-600 font-semibold active:bg-purple-50 active:scale-95 transition shadow-lg flex items-center justify-center gap-2">
-                                    <Zap className="w-5 h-5" />
-                                    Quick Log
+                            <div className="space-y-3 mb-8">
+                                <button onClick={() => setShowLanding(false)}
+                                    className="w-full py-5 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold text-lg active:from-purple-600 active:to-pink-600 active:scale-95 transition shadow-xl flex items-center justify-center gap-3">
+                                    Let's Build Wealth Today! <ChevronRight className="w-6 h-6" />
                                 </button>
-                                <button onClick={() => {
-                                    playSound('tap');
-                                    setShowLanding(false);
-                                    setView('advice');
-                                }}
 
-                                    className="py-4 rounded-2xl bg-white/80 backdrop-blur-sm border-2 border-blue-200 text-blue-600 font-semibold active:bg-blue-50 active:scale-95 transition shadow-lg flex items-center justify-center gap-2">
-                                    <Lightbulb className="w-5 h-5" />
-                                    My Advice
-                                </button>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <button onClick={() => {
+                                        playSound('tap');
+                                        setShowLanding(false);
+                                        setView('advice');
+                                    }}
+                                        className="py-4 rounded-2xl bg-white/80 backdrop-blur-sm border-2 border-purple-200 text-purple-600 font-semibold active:bg-purple-50 active:scale-95 transition shadow-lg flex items-center justify-center gap-2">
+                                        <Zap className="w-5 h-5" />
+                                        Quick Log
+                                    </button>
+                                    <button onClick={() => {
+                                        playSound('tap');
+                                        setShowLanding(false);
+                                        setView('advice');
+                                    }}
+
+                                        className="py-4 rounded-2xl bg-white/80 backdrop-blur-sm border-2 border-blue-200 text-blue-600 font-semibold active:bg-blue-50 active:scale-95 transition shadow-lg flex items-center justify-center gap-2">
+                                        <Lightbulb className="w-5 h-5" />
+                                        My Advice
+                                    </button>
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-2xl p-4 border-2 border-yellow-200">
-                            <div className="flex items-center gap-3 justify-center">
-                                <span className="text-2xl">{advice.emoji}</span>
-                                <p className="text-sm text-gray-700 text-left flex-1">
-                                    {advice.text}
-                                </p>
+                            <div className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-2xl p-4 border-2 border-yellow-200">
+                                <div className="flex items-center gap-3 justify-center">
+                                    <span className="text-2xl">{advice.emoji}</span>
+                                    <p className="text-sm text-gray-700 text-left flex-1">
+                                        {advice.text}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            );
-        }
+                );
+            }
 
-        return (
-            <div
-                className={`h-screen overflow-hidden ${wealthPhase === 'survive'
-                    ? 'bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50'
-                    : wealthPhase === 'stabilize'
-                        ? 'bg-gradient-to-br from-yellow-50 via-green-50 to-emerald-50'
-                        : 'bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50'
-                    }`}
-            >
-                <style>{`
+            return (
+                <div
+                    className={`h-screen overflow-hidden ${wealthPhase === 'survive'
+                        ? 'bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50'
+                        : wealthPhase === 'stabilize'
+                            ? 'bg-gradient-to-br from-yellow-50 via-green-50 to-emerald-50'
+                            : 'bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50'
+                        }`}
+                >
+                    <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&family=Nunito:wght@300;400;600;700;800&display=swap');
         * { 
           font-family: 'Nunito', sans-serif;
@@ -1706,608 +1706,566 @@
         input { font-size: 16px !important; }
       `}</style>
 
-                <div className="max-w-6xl mx-auto p-4 h-full overflow-y-auto pb-28">
-                    {/* Safe to Spend Header */}
-                    <div
-                        className={`mb-4 p-4 rounded-2xl sticky top-0 z-40 ${spendingStatus === 'safe'
-                            ? 'bg-green-100 border-2 border-green-300'
-                            : spendingStatus === 'caution'
-                                ? 'bg-yellow-100 border-2 border-yellow-300'
-                                : 'bg-red-100 border-2 border-red-300'
-                            }`}
-                    >
+                    <div className="max-w-6xl mx-auto p-4 h-full overflow-y-auto pb-28">
+                        {/* Safe to Spend Header */}
+                        <div
+                            className={`mb-4 p-4 rounded-2xl sticky top-0 z-40 ${spendingStatus === 'safe'
+                                ? 'bg-green-100 border-2 border-green-300'
+                                : spendingStatus === 'caution'
+                                    ? 'bg-yellow-100 border-2 border-yellow-300'
+                                    : 'bg-red-100 border-2 border-red-300'
+                                }`}
+                        >
 
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                {spendingStatus === 'safe' && <CheckCircle className="w-5 h-5 text-green-600" />}
-                                {spendingStatus === 'caution' && <Info className="w-5 h-5 text-yellow-600" />}
-                                {spendingStatus === 'overspent' && <AlertTriangle className="w-5 h-5 text-red-600" />}
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    {spendingStatus === 'safe' && <CheckCircle className="w-5 h-5 text-green-600" />}
+                                    {spendingStatus === 'caution' && <Info className="w-5 h-5 text-yellow-600" />}
+                                    {spendingStatus === 'overspent' && <AlertTriangle className="w-5 h-5 text-red-600" />}
 
-                                <div>
-                                    <div className="font-bold text-xs">
-                                        {spendingStatus === 'safe' && 'Safe to spend'}
-                                        {spendingStatus === 'caution' && 'Spend carefully'}
-                                        {spendingStatus === 'overspent' && 'Overspent'}
-                                    </div>
+                                    <div>
+                                        <div className="font-bold text-xs">
+                                            {spendingStatus === 'safe' && 'Safe to spend'}
+                                            {spendingStatus === 'caution' && 'Spend carefully'}
+                                            {spendingStatus === 'overspent' && 'Overspent'}
+                                        </div>
 
-                                    <div className="text-xl font-bold">
-                                        ${Math.abs(safeToSpend).toLocaleString()}
+                                        <div className="text-xl font-bold">
+                                            ${Math.abs(safeToSpend).toLocaleString()}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        {/* Modals */}
-                        {
-                            showQuickAdd && (
-                                <div
-                                    className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-                                    onClick={() => {
-                                        playSound('tap');
-                                        setShowQuickAdd(false);
-                                    }}
-                                >
-                                    <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
-                                        <div className="flex items-center justify-between mb-4">
-                                            <h3 className="text-xl font-bold text-gray-800">Quick Log</h3>
-                                            <button onClick={() => setShowQuickAdd(false)} className="text-gray-400 active:text-gray-600 text-2xl">×</button>
-                                        </div>
-
-                                        <div className="space-y-4 mb-4">
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-2">This week's small stuff</label>
-                                                <select
-                                                    value={quickCategory}
-                                                    onChange={(e) => setQuickCategory(e.target.value)}
-                                                    className="w-full p-3 mb-2 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none bg-white"
-                                                >
-                                                    <option value="food">🍔 Food</option>
-                                                    <option value="transport">🚗 Transport</option>
-                                                    <option value="housing">🏠 Housing</option>
-                                                    <option value="utilities">⚡ Utilities</option>
-                                                    <option value="entertainment">🎮 Entertainment</option>
-                                                    <option value="other">📦 Other</option>
-                                                </select>
-
-                                                <div className="flex gap-2">
-                                                    <input type="number" placeholder="e.g., 150" value={weeklyEstimate} onChange={(e) => setWeeklyEstimate(e.target.value)}
-                                                        className="flex-1 p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none" />
-                                                    <button onClick={addWeeklyEstimate}
-                                                        className="px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold active:from-purple-600 active:to-pink-600 active:scale-95 transition">
-                                                        Add
-                                                    </button>
-                                                </div>
+                            {/* Modals */}
+                            {
+                                showQuickAdd && (
+                                    <div
+                                        className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+                                        onClick={() => {
+                                            playSound('tap');
+                                            setShowQuickAdd(false);
+                                        }}
+                                    >
+                                        <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
+                                            <div className="flex items-center justify-between mb-4">
+                                                <h3 className="text-xl font-bold text-gray-800">Quick Log</h3>
+                                                <button onClick={() => setShowQuickAdd(false)} className="text-gray-400 active:text-gray-600 text-2xl">×</button>
                                             </div>
 
-                                            <div className="border-t-2 border-gray-100 pt-4">
-                                                <label className="block text-sm font-medium text-gray-700 mb-2">Quick presets</label>
-                                                <div className="grid grid-cols-2 gap-2">
-                                                    {[
-                                                        { label: 'Groceries', amount: 150, category: 'food' },
-                                                        { label: 'Petrol', amount: 60, category: 'transport' },
-                                                        { label: 'Eat Out', amount: 100, category: 'food' },
-                                                        { label: 'Utilities', amount: 120, category: 'utilities' }
-                                                    ].map((preset) => (
-                                                        <button
-                                                            key={preset.label}
-                                                            onClick={() => {
-                                                                quickAddPreset(preset.label, preset.amount, preset.category);
-                                                                setShowQuickAdd(false);
-                                                            }}
-                                                            className={`p-3 rounded-xl text-sm font-medium active:scale-95 transition
+                                            <div className="space-y-4 mb-4">
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 mb-2">This week's small stuff</label>
+                                                    <select
+                                                        value={quickCategory}
+                                                        onChange={(e) => setQuickCategory(e.target.value)}
+                                                        className="w-full p-3 mb-2 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none bg-white"
+                                                    >
+                                                        <option value="food">🍔 Food</option>
+                                                        <option value="transport">🚗 Transport</option>
+                                                        <option value="housing">🏠 Housing</option>
+                                                        <option value="utilities">⚡ Utilities</option>
+                                                        <option value="entertainment">🎮 Entertainment</option>
+                                                        <option value="other">📦 Other</option>
+                                                    </select>
+
+                                                    <div className="flex gap-2">
+                                                        <input type="number" placeholder="e.g., 150" value={weeklyEstimate} onChange={(e) => setWeeklyEstimate(e.target.value)}
+                                                            className="flex-1 p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none" />
+                                                        <button onClick={addWeeklyEstimate}
+                                                            className="px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold active:from-purple-600 active:to-pink-600 active:scale-95 transition">
+                                                            Add
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <div className="border-t-2 border-gray-100 pt-4">
+                                                    <label className="block text-sm font-medium text-gray-700 mb-2">Quick presets</label>
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        {[
+                                                            { label: 'Groceries', amount: 150, category: 'food' },
+                                                            { label: 'Petrol', amount: 60, category: 'transport' },
+                                                            { label: 'Eat Out', amount: 100, category: 'food' },
+                                                            { label: 'Utilities', amount: 120, category: 'utilities' }
+                                                        ].map((preset) => (
+                                                            <button
+                                                                key={preset.label}
+                                                                onClick={() => {
+                                                                    quickAddPreset(preset.label, preset.amount, preset.category);
+                                                                    setShowQuickAdd(false);
+                                                                }}
+                                                                className={`p-3 rounded-xl text-sm font-medium active:scale-95 transition
     ${categoryColors[preset.category].bg}
     ${categoryColors[preset.category].text}
     border-2 ${categoryColors[preset.category].border}`}
-                                                        >
-                                                            {preset.label}
-                                                            <span className="text-xs ml-1">(~${preset.amount})</span>
-                                                        </button>
-
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )
-                        }
-
-                        {
-                            showLoanModal && (
-                                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowLoanModal(false)}>
-                                    <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-                                        <div className="flex items-center justify-between mb-4">
-                                            <h3 className="text-xl font-bold text-gray-800">Add Loan</h3>
-                                            <button onClick={() => setShowLoanModal(false)} className="text-gray-400 active:text-gray-600 text-2xl">×</button>
-                                        </div>
-
-
-
-                                        <div className="space-y-3 mb-4">
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Loan Name</label>
-                                                <input type="text" placeholder="e.g., Personal Loan" value={newLoan.name} onChange={(e) => setNewLoan({ ...newLoan, name: e.target.value })}
-                                                    className="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none" />
-                                            </div>
-
-                                            <div className="grid grid-cols-2 gap-3">
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
-                                                    <input type="number" placeholder="5000" value={newLoan.amount} onChange={(e) => setNewLoan({ ...newLoan, amount: e.target.value })}
-                                                        className="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-1">APR %</label>
-                                                    <input type="number" placeholder="8" value={newLoan.apr} onChange={(e) => setNewLoan({ ...newLoan, apr: e.target.value })}
-                                                        className="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none" />
-                                                </div>
-                                            </div>
-
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Payment</label>
-                                                <input type="number" placeholder="150" value={newLoan.monthlyPayment} onChange={(e) => setNewLoan({ ...newLoan, monthlyPayment: e.target.value })}
-                                                    className="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none" />
-                                            </div>
-
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Purpose</label>
-                                                <select value={newLoan.purpose} onChange={(e) => setNewLoan({ ...newLoan, purpose: e.target.value })}
-                                                    className="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none">
-                                                    <option value="debt-consolidation">Pay off CC debt</option>
-                                                    <option value="emergency-buffer">Emergency buffer</option>
-                                                    <option value="other">Other</option>
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        <button onClick={addLoan}
-                                            className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold active:from-purple-600 active:to-pink-600 active:scale-95 transition">
-                                            Add Loan
-                                        </button>
-                                    </div>
-                                </div>
-                            )
-                        }
-                        {
-                            selectedExpense && (
-                                <div
-                                    className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-                                    onClick={() => {
-                                        setSelectedExpense(null);
-                                        setEditExpense(null);
-                                    }}
-                                >
-                                    <div
-                                        className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl"
-                                        onClick={(e) => e.stopPropagation()}
-                                    >
-                                        <h3 className="text-xl font-bold mb-4">Edit Log</h3>
-
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Amount
-                                        </label>
-                                        <input
-                                            type="number"
-                                            value={editExpense.amount}
-                                            onChange={(e) =>
-                                                setEditExpense({ ...editExpense, amount: Number(e.target.value) })
-                                            }
-                                            className="w-full p-3 rounded-xl border-2 border-gray-200 mb-3"
-                                        />
-
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Description
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={editExpense.description}
-                                            onChange={(e) =>
-                                                setEditExpense({ ...editExpense, description: e.target.value })
-                                            }
-                                            className="w-full p-3 rounded-xl border-2 border-gray-200 mb-3"
-                                        />
-
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Category
-                                        </label>
-                                        <select
-                                            value={editExpense.category}
-                                            onChange={(e) =>
-                                                setEditExpense({ ...editExpense, category: e.target.value })
-                                            }
-                                            className="w-full p-3 rounded-xl border-2 border-gray-200 mb-4"
-                                        >
-                                            <option value="food">🍔 Food</option>
-                                            <option value="transport">🚗 Transport</option>
-                                            <option value="housing">🏠 Housing</option>
-                                            <option value="utilities">⚡ Utilities</option>
-                                            <option value="entertainment">🎮 Entertainment</option>
-                                            <option value="other">📦 Other</option>
-                                        </select>
-
-                                        <div className="flex gap-2">
-                                            <button
-                                                onClick={() => {
-                                                    setExpenses(prev =>
-                                                        prev.map(e => (e.id === editExpense.id ? editExpense : e))
-                                                    );
-                                                    setSelectedExpense(null);
-                                                    setEditExpense(null);
-                                                }}
-                                                className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold active:scale-95"
-                                            >
-                                                Save
-                                            </button>
-
-                                            <button
-                                                onClick={() => {
-                                                    if (confirm('Delete this log?')) {
-                                                        setExpenses(prev =>
-                                                            prev.filter(e => e.id !== selectedExpense.id)
-                                                        );
-                                                        setSelectedExpense(null);
-                                                        setEditExpense(null);
-                                                    }
-                                                }}
-                                                className="flex-1 py-3 bg-red-100 text-red-600 rounded-xl font-semibold active:scale-95"
-                                            >
-                                                Delete
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            )
-                        }
-                        <div className="flex gap-2 mb-6 overflow-x-auto pb-2 -mx-4 px-4">
-                            <button
-                                onClick={() => {
-                                    playSound('whoosh');
-                                    setShowQuickAdd(true);
-                                }}
-                                className="flex items-center gap-2 px-4 py-3 rounded-2xl font-semibold bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg active:scale-95 transition whitespace-nowrap">
-
-                                <Zap className="w-4 h-4" />
-                                Quick Log
-                            </button>
-                            {[
-                                { id: 'dashboard', label: 'Home', icon: '🏠' },
-                                { id: 'loans', label: 'Loans', icon: '💳' },
-                                { id: 'advice', label: 'Advice', icon: '💡' }
-                            ].map(tab => (
-                                <button key={tab.id} onClick={() => setView(tab.id)}
-                                    className={`flex items-center gap-2 px-4 py-3 rounded-2xl font-semibold active:scale-95 transition-all whitespace-nowrap ${view === tab.id ? 'bg-white text-purple-600 shadow-lg border-2 border-purple-200' : 'bg-white/50 text-gray-700 border-2 border-gray-200'
-                                        }`}>
-                                    <span className="text-base">{tab.icon}</span>
-                                    {tab.label}
-                                </button>
-                            ))}
-                        </div>
-
-                        {view === 'dashboard' && DashboardView}
-                        <div className="space-y-4">
-
-                            <div className="grid grid-cols-2 gap-3">
-                                <div
-                                    onClick={() => setView('cashBuffer')}
-                                    className="flex items-center justify-between mb-2">
-                                    <span className="text-gray-600 font-medium text-sm">Momentum</span>
-                                    <div className={`text-2xl font-bold ${monthlyNet >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>
-                                        ${monthlyNet.toLocaleString()}
-                                    </div>
-                                    <p className="text-xs text-gray-500 mt-1">
-                                        {monthlyNet > 0 && `📈 You’re adding ${monthlyNet.toLocaleString()} to your future each month`}
-                                        {monthlyNet === 0 && `➖ You’re breaking even - don't sweat it babe`}
-                                        {monthlyNet < 0 && `📉 You’re leaking ${Math.abs(monthlyNet).toLocaleString()} each month`}
-                                    </p>
-
-                                    <span className="text-xl">💰</span>
-                                </div>
-                                <div className={`text-2xl font-bold ${monthlyNet >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>${monthlyNet.toLocaleString()}</div>
-                            </div>
-
-                            <div
-                                onClick={() => setView('income')}
-                                className="bg-white rounded-2xl p-4 shadow-lg border-2 border-green-100 active:scale-95 transition">
-                                <div className="flex items-center justify-between mb-2">
-                                    <span className="text-gray-600 font-medium text-sm">Income</span>
-                                    <span className="text-xl">💵</span>
-                                </div>
-                                <div className="text-2xl font-bold text-green-600">${income.toLocaleString()}</div>
-                            </div>
-
-
-                            <div
-                                onClick={() => setView('expenses')}
-                                className="bg-white rounded-2xl p-4 shadow-lg border-2 border-red-100 active:scale-95 transition">
-                                <div className="flex items-center justify-between mb-2">
-                                    <span className="text-gray-600 font-medium text-sm">Expenses</span>
-                                    <span className="text-xl">📊</span>
-                                </div>
-                                <div className="text-2xl font-bold text-red-600">${totalExpenses.toLocaleString()}</div>
-                            </div>
-
-
-                            <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-blue-100 active:scale-95 transition">
-
-
-
-                                <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-purple-100 active:scale-95 transition">
-                                    <div
-                                        onClick={() => setView('cashBuffer')}
-                                        className="flex items-center justify-between mb-2">
-                                        <span className="text-gray-600 font-medium text-sm">Cash Buffer (No-Touchy)</span>
-                                        <span className="text-xl">🏦</span>
-                                    </div>
-                                    <div className="text-2xl font-bold text-purple-600">
-                                        ${cashBuffer.toLocaleString()}
-                                    </div>
-
-                                </div>
-
-                                <div className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl p-6 shadow-2xl text-white">
-                                    <div className="flex items-center gap-2 mb-3">
-                                        <div className="text-3xl">✨</div>
-                                        <div>
-                                            <h3 className="text-xl font-bold">Net Worth</h3>
-                                            <p className="text-purple-100 text-sm">Assets - Liabilities</p>
-                                        </div>
-                                    </div>
-                                    <div className="text-4xl font-bold mb-4">${netWorth.toLocaleString()}</div>
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3">
-                                            <div className="text-xs text-purple-100 mb-1">Assets</div>
-                                            <div className="text-xl font-bold">${(bankBalance + cashBuffer).toLocaleString()}</div>
-                                        </div>
-                                        <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3">
-                                            <div className="text-xs text-purple-100 mb-1">Debts</div>
-                                            <div className="text-xl font-bold">${totalDebt.toLocaleString()}</div>
-                                        </div>
-                                    </div>
-                                    {/* 🧠 Decision Simulator */}
-                                    <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-purple-100">
-                                        <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
-                                            🧠 Decision Simulator
-                                        </h3>
-
-                                        <p className="text-sm text-gray-600 mb-3">
-                                            Test a purchase before making it. Think in runway, not impulse.
-                                        </p>
-
-                                        <input
-                                            type="number"
-                                            placeholder="If I spend RM..."
-                                            value={decisionAmount}
-                                            onChange={(e) => setDecisionAmount(e.target.value)}
-                                            className="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none mb-3"
-                                        />
-
-                                        {decisionImpact && (
-                                            <div className="space-y-2 text-sm">
-                                                <div className="flex items-center gap-2">
-                                                    ⏳ <span>This costs about <strong>{decisionImpact.daysLost} days</strong> of runway</span>
-                                                </div>
-
-                                                {decisionImpact.weakensBuffer && (
-                                                    <div className="flex items-center gap-2 text-orange-600">
-                                                        ⚠️ <span>This breaks your Cash Buffer</span>
-                                                    </div>
-                                                )}
-
-                                                {!decisionImpact.weakensBuffer && (
-                                                    <div className="flex items-center gap-2 text-green-600">
-                                                        ✅ <span>Your buffer stays intact</span>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        )}
-
-                                        {decisionAdvice && (
-                                            <div className="mt-3 text-sm font-semibold text-purple-600">
-                                                💬 {decisionAdvice}
-                                            </div>
-                                        )}
-
-                                    </div>
-                                </div>
-
-
-                                {expenses.length > 0 && (
-                                    <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-gray-100">
-                                        <h3 className="text-lg font-bold mb-3 text-gray-800">Recent Activity</h3>
-                                        <button
-                                            onClick={() => setView('logs')}
-                                            className="text-sm text-purple-600 font-semibold mb-2 active:underline"
-                                        >
-                                            View all logs →
-                                        </button>
-
-                                        <div className="space-y-2">
-                                            {expenses.slice().reverse().slice(0, 5).map((expense) => {
-                                                const colors = categoryColors[expense.category];
-                                                return (
-                                                    <div
-                                                        key={expense.id}
-                                                        onClick={() => {
-                                                            setSelectedExpense(expense);
-                                                            setEditExpense({ ...expense });
-                                                        }}
-                                                        className={`flex items-center justify-between p-3 rounded-xl ${colors.bg} border-2 ${colors.border} cursor-pointer active:scale-95 transition`}
-                                                    >
-                                                        <div className="flex items-center gap-2 flex-1 min-w-0">
-                                                            <span className={`px-2 py-1 rounded-lg text-xs font-medium ${colors.text}`}>
-                                                                {expense.type === 'estimate' ? '≈' : expense.type === 'quick' ? '⚡' : '💰'}
-                                                            </span>
-                                                            <span className="text-gray-800 font-medium truncate flex-1 text-sm">{expense.description}</span>
-                                                        </div>
-                                                        <div className="flex items-center gap-2">
-                                                            <span className="text-lg font-bold text-gray-800">${expense.amount}</span>
-                                                            <button
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    deleteExpense(expense.id);
-                                                                }}
-                                                                className="text-red-500 active:text-red-700 active:scale-110 transition"
                                                             >
-                                                                ×
+                                                                {preset.label}
+                                                                <span className="text-xs ml-1">(~${preset.amount})</span>
                                                             </button>
 
-                                                        </div>
+                                                        ))}
                                                     </div>
-                                                );
-                                            })}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                )}
-                            </div>
+                                )
+                            }
 
-                            {view === 'income' && (
-                                <div className="space-y-4">
-                                    <h3 className="text-xl font-bold text-gray-800">
-                                        Monthly Income
-                                    </h3>
+                            {
+                                showLoanModal && (
+                                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowLoanModal(false)}>
+                                        <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                                            <div className="flex items-center justify-between mb-4">
+                                                <h3 className="text-xl font-bold text-gray-800">Add Loan</h3>
+                                                <button onClick={() => setShowLoanModal(false)} className="text-gray-400 active:text-gray-600 text-2xl">×</button>
+                                            </div>
 
-                                    <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-green-100">
-                                        <div className="text-sm text-gray-500 mb-1">
-                                            Average monthly take-home
-                                        </div>
 
-                                        <input
-                                            type="number"
-                                            value={income}
-                                            onChange={(e) => {
-                                                const value = Number(e.target.value) || 0;
-                                                setIncomeLogs(prev => {
-                                                    const others = prev.filter(i => i.month !== currentMonthKey);
-                                                    return [...others, { month: currentMonthKey, amount: value }];
-                                                });
-                                            }}
-                                            className="w-full p-4 text-3xl font-bold text-green-600 rounded-2xl border-2 border-green-200 focus:outline-none focus:border-green-400 mb-4"
-                                        />
-                                        <p className="text-sm text-gray-600">
-                                            Adjust this anytime if your income changes.
 
-                                        </p>
+                                            <div className="space-y-3 mb-4">
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">Loan Name</label>
+                                                    <input type="text" placeholder="e.g., Personal Loan" value={newLoan.name} onChange={(e) => setNewLoan({ ...newLoan, name: e.target.value })}
+                                                        className="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none" />
+                                                </div>
 
-                                        <button
-                                            onClick={() => setView('dashboard')}
-                                            className="px-4 py-2 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold active:scale-95 transition"
-                                        >
-                                            ← Back to Home
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    <div>
+                                                        <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+                                                        <input type="number" placeholder="5000" value={newLoan.amount} onChange={(e) => setNewLoan({ ...newLoan, amount: e.target.value })}
+                                                            className="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none" />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-sm font-medium text-gray-700 mb-1">APR %</label>
+                                                        <input type="number" placeholder="8" value={newLoan.apr} onChange={(e) => setNewLoan({ ...newLoan, apr: e.target.value })}
+                                                            className="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none" />
+                                                    </div>
+                                                </div>
 
-                            {view === 'loans' && (
-                                <div className="space-y-4">
-                                    <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-purple-100">
-                                        <div className="flex items-center justify-between mb-4">
-                                            <h3 className="text-xl font-bold text-gray-800">My Loans</h3>
-                                            <button onClick={() => setShowLoanModal(true)}
-                                                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold active:from-purple-600 active:to-pink-600 active:scale-95 transition">
-                                                <Plus className="w-4 h-4" />
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Payment</label>
+                                                    <input type="number" placeholder="150" value={newLoan.monthlyPayment} onChange={(e) => setNewLoan({ ...newLoan, monthlyPayment: e.target.value })}
+                                                        className="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none" />
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">Purpose</label>
+                                                    <select value={newLoan.purpose} onChange={(e) => setNewLoan({ ...newLoan, purpose: e.target.value })}
+                                                        className="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none">
+                                                        <option value="debt-consolidation">Pay off CC debt</option>
+                                                        <option value="emergency-buffer">Emergency buffer</option>
+                                                        <option value="other">Other</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <button onClick={addLoan}
+                                                className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold active:from-purple-600 active:to-pink-600 active:scale-95 transition">
                                                 Add Loan
                                             </button>
                                         </div>
-
-                                        {loans.length === 0 ? (
-                                            <div className="text-center py-12">
-                                                <div className="text-6xl mb-4">💳</div>
-                                                <p className="text-gray-500 mb-4">No loans yet</p>
-                                                <p className="text-sm text-gray-400">Add a loan to track payments and see how it affects your finances</p>
-                                            </div>
-                                        ) : (
-                                            <div className="space-y-3">
-                                                {loans.map((loan) => (
-                                                    <div key={loan.id} className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4 border-2 border-blue-200">
-                                                        <div className="flex items-start justify-between mb-2">
-                                                            <div className="flex-1">
-                                                                <h4 className="font-bold text-gray-800">{loan.name}</h4>
-                                                                <p className="text-sm text-gray-600">{loan.apr}% APR</p>
-                                                            </div>
-                                                            <button onClick={() => deleteLoan(loan.id)} className="text-red-500 active:text-red-700 active:scale-110 transition">
-                                                                <X className="w-5 h-5" />
-                                                            </button>
-                                                        </div>
-                                                        <div className="grid grid-cols-2 gap-2 text-sm">
-                                                            <div>
-                                                                <div className="text-gray-600">Amount</div>
-                                                                <div className="font-bold text-gray-800">${loan.amount.toLocaleString()}</div>
-                                                            </div>
-                                                            <div>
-                                                                <div className="text-gray-600">Monthly Payment</div>
-                                                                <div className="font-bold text-blue-600">${loan.monthlyPayment.toLocaleString()}</div>
-                                                            </div>
-                                                        </div>
-                                                        {loan.purpose === 'debt-consolidation' && (
-                                                            <div className="mt-2 text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-lg inline-block">
-                                                                💡 Debt consolidation
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-
-                                        {creditCardDebt > 0 && loans.length === 0 && (
-                                            <div className="mt-4 p-4 bg-yellow-50 rounded-xl border-2 border-yellow-200">
-                                                <div className="flex items-start gap-2">
-                                                    <Lightbulb className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
-                                                    <div className="text-sm text-yellow-700">
-                                                        <strong>Tip:</strong> You have ${creditCardDebt.toLocaleString()} in CC debt at {creditCardAPR}% APR.
-                                                        A lower-rate loan could save you ${((creditCardDebt * (creditCardAPR / 100)) / 12).toFixed(0)}/month!
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
                                     </div>
-                                </div>
-                            )}
-                            {view === 'logs' && (
-                                <div className="space-y-3">
-                                    <h3 className="text-xl font-bold text-gray-800 mb-2">All Logs</h3>
+                                )
+                            }
+                            {
+                                selectedExpense && (
+                                    <div
+                                        className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+                                        onClick={() => {
+                                            setSelectedExpense(null);
+                                            setEditExpense(null);
+                                        }}
+                                    >
+                                        <div
+                                            className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            <h3 className="text-xl font-bold mb-4">Edit Log</h3>
 
-                                    {expenses.slice().reverse().map(expense => {
-                                        const colors = categoryColors[expense.category];
-                                        return (
-                                            <div
-                                                key={expense.id}
-                                                onClick={() => {
-                                                    setSelectedExpense(expense);
-                                                    setEditExpense({ ...expense });
-                                                }}
-                                                className={`p-4 rounded-xl border-2 ${colors.border} ${colors.bg} cursor-pointer active:scale-95 transition`}
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                Amount
+                                            </label>
+                                            <input
+                                                type="number"
+                                                value={editExpense.amount}
+                                                onChange={(e) =>
+                                                    setEditExpense({ ...editExpense, amount: Number(e.target.value) })
+                                                }
+                                                className="w-full p-3 rounded-xl border-2 border-gray-200 mb-3"
+                                            />
+
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                Description
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={editExpense.description}
+                                                onChange={(e) =>
+                                                    setEditExpense({ ...editExpense, description: e.target.value })
+                                                }
+                                                className="w-full p-3 rounded-xl border-2 border-gray-200 mb-3"
+                                            />
+
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                Category
+                                            </label>
+                                            <select
+                                                value={editExpense.category}
+                                                onChange={(e) =>
+                                                    setEditExpense({ ...editExpense, category: e.target.value })
+                                                }
+                                                className="w-full p-3 rounded-xl border-2 border-gray-200 mb-4"
                                             >
-                                                <div className="flex justify-between items-center">
-                                                    <span className="font-medium truncate">{expense.description}</span>
-                                                    <span className="font-bold">${expense.amount}</span>
-                                                </div>
-                                                <div className="text-xs text-gray-500 mt-1">
-                                                    {new Date(expense.date).toLocaleDateString()}
-                                                </div>
+                                                <option value="food">🍔 Food</option>
+                                                <option value="transport">🚗 Transport</option>
+                                                <option value="housing">🏠 Housing</option>
+                                                <option value="utilities">⚡ Utilities</option>
+                                                <option value="entertainment">🎮 Entertainment</option>
+                                                <option value="other">📦 Other</option>
+                                            </select>
+
+                                            <div className="flex gap-2">
+                                                <button
+                                                    onClick={() => {
+                                                        setExpenses(prev =>
+                                                            prev.map(e => (e.id === editExpense.id ? editExpense : e))
+                                                        );
+                                                        setSelectedExpense(null);
+                                                        setEditExpense(null);
+                                                    }}
+                                                    className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold active:scale-95"
+                                                >
+                                                    Save
+                                                </button>
+
+                                                <button
+                                                    onClick={() => {
+                                                        if (confirm('Delete this log?')) {
+                                                            setExpenses(prev =>
+                                                                prev.filter(e => e.id !== selectedExpense.id)
+                                                            );
+                                                            setSelectedExpense(null);
+                                                            setEditExpense(null);
+                                                        }
+                                                    }}
+                                                    className="flex-1 py-3 bg-red-100 text-red-600 rounded-xl font-semibold active:scale-95"
+                                                >
+                                                    Delete
+                                                </button>
                                             </div>
-                                        );
-                                    })}
-                                </div>
-                            )}
-                            {view === 'expenses' && (<div className="space-y-3">
-                                <h3 className="text-xl font-bold text-gray-800 mb-2">
-                                    Money Going Out
-                                </h3>
-
-                                <p className="text-sm text-gray-600 mb-4">
-                                    No judgement. Just watching...
-                                </p>
-
-                                {expenses.filter(e => e.type !== 'estimate').length === 0 ? (
-                                    <div className="bg-white rounded-2xl p-6 shadow border-2 border-gray-100 text-center text-gray-500">
-                                        No expenses logged yet.
+                                        </div>
                                     </div>
-                                ) : (
-                                    expenses
-                                        .filter(e => e.amount > 0)
-                                        .slice()
-                                        .reverse()
-                                        .map(expense => {
+                                )
+                            }
+                            <div className="flex gap-2 mb-6 overflow-x-auto pb-2 -mx-4 px-4">
+                                <button
+                                    onClick={() => {
+                                        playSound('whoosh');
+                                        setShowQuickAdd(true);
+                                    }}
+                                    className="flex items-center gap-2 px-4 py-3 rounded-2xl font-semibold bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg active:scale-95 transition whitespace-nowrap">
+
+                                    <Zap className="w-4 h-4" />
+                                    Quick Log
+                                </button>
+                                {[
+                                    { id: 'dashboard', label: 'Home', icon: '🏠' },
+                                    { id: 'loans', label: 'Loans', icon: '💳' },
+                                    { id: 'advice', label: 'Advice', icon: '💡' }
+                                ].map(tab => (
+                                    <button key={tab.id} onClick={() => setView(tab.id)}
+                                        className={`flex items-center gap-2 px-4 py-3 rounded-2xl font-semibold active:scale-95 transition-all whitespace-nowrap ${view === tab.id ? 'bg-white text-purple-600 shadow-lg border-2 border-purple-200' : 'bg-white/50 text-gray-700 border-2 border-gray-200'
+                                            }`}>
+                                        <span className="text-base">{tab.icon}</span>
+                                        {tab.label}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <div className="space-y-4">
+
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div
+                                        onClick={() => setView('cashBuffer')}
+                                        className="flex items-center justify-between mb-2">
+                                        <span className="text-gray-600 font-medium text-sm">Momentum</span>
+                                        <div className={`text-2xl font-bold ${monthlyNet >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>
+                                            ${monthlyNet.toLocaleString()}
+                                        </div>
+                                        <p className="text-xs text-gray-500 mt-1">
+                                            {monthlyNet > 0 && `📈 You’re adding ${monthlyNet.toLocaleString()} to your future each month`}
+                                            {monthlyNet === 0 && `➖ You’re breaking even - don't sweat it babe`}
+                                            {monthlyNet < 0 && `📉 You’re leaking ${Math.abs(monthlyNet).toLocaleString()} each month`}
+                                        </p>
+
+                                        <span className="text-xl">💰</span>
+                                    </div>
+                                    <div className={`text-2xl font-bold ${monthlyNet >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>${monthlyNet.toLocaleString()}</div>
+                                </div>
+
+                                <div
+                                    onClick={() => setView('income')}
+                                    className="bg-white rounded-2xl p-4 shadow-lg border-2 border-green-100 active:scale-95 transition">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-gray-600 font-medium text-sm">Income</span>
+                                        <span className="text-xl">💵</span>
+                                    </div>
+                                    <div className="text-2xl font-bold text-green-600">${income.toLocaleString()}</div>
+                                </div>
+
+
+                                <div
+                                    onClick={() => setView('expenses')}
+                                    className="bg-white rounded-2xl p-4 shadow-lg border-2 border-red-100 active:scale-95 transition">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-gray-600 font-medium text-sm">Expenses</span>
+                                        <span className="text-xl">📊</span>
+                                    </div>
+                                    <div className="text-2xl font-bold text-red-600">${totalExpenses.toLocaleString()}</div>
+                                </div>
+
+
+                                <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-blue-100 active:scale-95 transition">
+
+
+
+                                    <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-purple-100 active:scale-95 transition">
+                                        <div
+                                            onClick={() => setView('cashBuffer')}
+                                            className="flex items-center justify-between mb-2">
+                                            <span className="text-gray-600 font-medium text-sm">Cash Buffer (No-Touchy)</span>
+                                            <span className="text-xl">🏦</span>
+                                        </div>
+                                        <div className="text-2xl font-bold text-purple-600">
+                                            ${cashBuffer.toLocaleString()}
+                                        </div>
+
+                                    </div>
+
+                                    <div className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl p-6 shadow-2xl text-white">
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <div className="text-3xl">✨</div>
+                                            <div>
+                                                <h3 className="text-xl font-bold">Net Worth</h3>
+                                                <p className="text-purple-100 text-sm">Assets - Liabilities</p>
+                                            </div>
+                                        </div>
+                                        <div className="text-4xl font-bold mb-4">${netWorth.toLocaleString()}</div>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3">
+                                                <div className="text-xs text-purple-100 mb-1">Assets</div>
+                                                <div className="text-xl font-bold">${(bankBalance + cashBuffer).toLocaleString()}</div>
+                                            </div>
+                                            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3">
+                                                <div className="text-xs text-purple-100 mb-1">Debts</div>
+                                                <div className="text-xl font-bold">${totalDebt.toLocaleString()}</div>
+                                            </div>
+                                        </div>
+                                        {/* 🧠 Decision Simulator */}
+                                        <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-purple-100">
+                                            <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                                                🧠 Decision Simulator
+                                            </h3>
+
+                                            <p className="text-sm text-gray-600 mb-3">
+                                                Test a purchase before making it. Think in runway, not impulse.
+                                            </p>
+
+                                            <input
+                                                type="number"
+                                                placeholder="If I spend RM..."
+                                                value={decisionAmount}
+                                                onChange={(e) => setDecisionAmount(e.target.value)}
+                                                className="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-purple-400 focus:outline-none mb-3"
+                                            />
+
+                                            {decisionImpact && (
+                                                <div className="space-y-2 text-sm">
+                                                    <div className="flex items-center gap-2">
+                                                        ⏳ <span>This costs about <strong>{decisionImpact.daysLost} days</strong> of runway</span>
+                                                    </div>
+
+                                                    {decisionImpact.weakensBuffer && (
+                                                        <div className="flex items-center gap-2 text-orange-600">
+                                                            ⚠️ <span>This breaks your Cash Buffer</span>
+                                                        </div>
+                                                    )}
+
+                                                    {!decisionImpact.weakensBuffer && (
+                                                        <div className="flex items-center gap-2 text-green-600">
+                                                            ✅ <span>Your buffer stays intact</span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+
+                                            {decisionAdvice && (
+                                                <div className="mt-3 text-sm font-semibold text-purple-600">
+                                                    💬 {decisionAdvice}
+                                                </div>
+                                            )}
+
+                                        </div>
+                                    </div>
+
+
+                                    {expenses.length > 0 && (
+                                        <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-gray-100">
+                                            <h3 className="text-lg font-bold mb-3 text-gray-800">Recent Activity</h3>
+                                            <button
+                                                onClick={() => setView('logs')}
+                                                className="text-sm text-purple-600 font-semibold mb-2 active:underline"
+                                            >
+                                                View all logs →
+                                            </button>
+
+                                            <div className="space-y-2">
+                                                {expenses.slice().reverse().slice(0, 5).map((expense) => {
+                                                    const colors = categoryColors[expense.category];
+                                                    return (
+                                                        <div
+                                                            key={expense.id}
+                                                            onClick={() => {
+                                                                setSelectedExpense(expense);
+                                                                setEditExpense({ ...expense });
+                                                            }}
+                                                            className={`flex items-center justify-between p-3 rounded-xl ${colors.bg} border-2 ${colors.border} cursor-pointer active:scale-95 transition`}
+                                                        >
+                                                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                                                                <span className={`px-2 py-1 rounded-lg text-xs font-medium ${colors.text}`}>
+                                                                    {expense.type === 'estimate' ? '≈' : expense.type === 'quick' ? '⚡' : '💰'}
+                                                                </span>
+                                                                <span className="text-gray-800 font-medium truncate flex-1 text-sm">{expense.description}</span>
+                                                            </div>
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-lg font-bold text-gray-800">${expense.amount}</span>
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        deleteExpense(expense.id);
+                                                                    }}
+                                                                    className="text-red-500 active:text-red-700 active:scale-110 transition"
+                                                                >
+                                                                    ×
+                                                                </button>
+
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {view === 'income' && (
+                                    <div className="space-y-4">
+                                        <h3 className="text-xl font-bold text-gray-800">
+                                            Monthly Income
+                                        </h3>
+
+                                        <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-green-100">
+                                            <div className="text-sm text-gray-500 mb-1">
+                                                Average monthly take-home
+                                            </div>
+
+                                            <input
+                                                type="number"
+                                                value={income}
+                                                onChange={(e) => {
+                                                    const value = Number(e.target.value) || 0;
+                                                    setIncomeLogs(prev => {
+                                                        const others = prev.filter(i => i.month !== currentMonthKey);
+                                                        return [...others, { month: currentMonthKey, amount: value }];
+                                                    });
+                                                }}
+                                                className="w-full p-4 text-3xl font-bold text-green-600 rounded-2xl border-2 border-green-200 focus:outline-none focus:border-green-400 mb-4"
+                                            />
+                                            <p className="text-sm text-gray-600">
+                                                Adjust this anytime if your income changes.
+
+                                            </p>
+
+                                            <button
+                                                onClick={() => setView('dashboard')}
+                                                className="px-4 py-2 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold active:scale-95 transition"
+                                            >
+                                                ← Back to Home
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {view === 'loans' && (
+                                    <div className="space-y-4">
+                                        <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-purple-100">
+                                            <div className="flex items-center justify-between mb-4">
+                                                <h3 className="text-xl font-bold text-gray-800">My Loans</h3>
+                                                <button onClick={() => setShowLoanModal(true)}
+                                                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold active:from-purple-600 active:to-pink-600 active:scale-95 transition">
+                                                    <Plus className="w-4 h-4" />
+                                                    Add Loan
+                                                </button>
+                                            </div>
+
+                                            {loans.length === 0 ? (
+                                                <div className="text-center py-12">
+                                                    <div className="text-6xl mb-4">💳</div>
+                                                    <p className="text-gray-500 mb-4">No loans yet</p>
+                                                    <p className="text-sm text-gray-400">Add a loan to track payments and see how it affects your finances</p>
+                                                </div>
+                                            ) : (
+                                                <div className="space-y-3">
+                                                    {loans.map((loan) => (
+                                                        <div key={loan.id} className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4 border-2 border-blue-200">
+                                                            <div className="flex items-start justify-between mb-2">
+                                                                <div className="flex-1">
+                                                                    <h4 className="font-bold text-gray-800">{loan.name}</h4>
+                                                                    <p className="text-sm text-gray-600">{loan.apr}% APR</p>
+                                                                </div>
+                                                                <button onClick={() => deleteLoan(loan.id)} className="text-red-500 active:text-red-700 active:scale-110 transition">
+                                                                    <X className="w-5 h-5" />
+                                                                </button>
+                                                            </div>
+                                                            <div className="grid grid-cols-2 gap-2 text-sm">
+                                                                <div>
+                                                                    <div className="text-gray-600">Amount</div>
+                                                                    <div className="font-bold text-gray-800">${loan.amount.toLocaleString()}</div>
+                                                                </div>
+                                                                <div>
+                                                                    <div className="text-gray-600">Monthly Payment</div>
+                                                                    <div className="font-bold text-blue-600">${loan.monthlyPayment.toLocaleString()}</div>
+                                                                </div>
+                                                            </div>
+                                                            {loan.purpose === 'debt-consolidation' && (
+                                                                <div className="mt-2 text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-lg inline-block">
+                                                                    💡 Debt consolidation
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+
+                                            {creditCardDebt > 0 && loans.length === 0 && (
+                                                <div className="mt-4 p-4 bg-yellow-50 rounded-xl border-2 border-yellow-200">
+                                                    <div className="flex items-start gap-2">
+                                                        <Lightbulb className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                                                        <div className="text-sm text-yellow-700">
+                                                            <strong>Tip:</strong> You have ${creditCardDebt.toLocaleString()} in CC debt at {creditCardAPR}% APR.
+                                                            A lower-rate loan could save you ${((creditCardDebt * (creditCardAPR / 100)) / 12).toFixed(0)}/month!
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                                {view === 'logs' && (
+                                    <div className="space-y-3">
+                                        <h3 className="text-xl font-bold text-gray-800 mb-2">All Logs</h3>
+
+                                        {expenses.slice().reverse().map(expense => {
                                             const colors = categoryColors[expense.category];
                                             return (
                                                 <div
@@ -2319,468 +2277,498 @@
                                                     className={`p-4 rounded-xl border-2 ${colors.border} ${colors.bg} cursor-pointer active:scale-95 transition`}
                                                 >
                                                     <div className="flex justify-between items-center">
-                                                        <span className="font-medium truncate">
-                                                            {expense.description}
-                                                        </span>
-                                                        <span className="font-bold">
-                                                            ${expense.amount}
-                                                        </span>
+                                                        <span className="font-medium truncate">{expense.description}</span>
+                                                        <span className="font-bold">${expense.amount}</span>
                                                     </div>
                                                     <div className="text-xs text-gray-500 mt-1">
                                                         {new Date(expense.date).toLocaleDateString()}
                                                     </div>
                                                 </div>
                                             );
-                                        })
+                                        })}
+                                    </div>
                                 )}
-                            </div>
-                            )}
-                            {view === 'cashBuffer' && (
-                                <div className="space-y-4">
-                                    <h3 className="text-xl font-bold text-gray-800">
-                                        Cash Buffer (No-Touchy)
+                                {view === 'expenses' && (<div className="space-y-3">
+                                    <h3 className="text-xl font-bold text-gray-800 mb-2">
+                                        Money Going Out
                                     </h3>
 
-                                    <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-purple-100">
-                                        <div className="text-sm text-gray-500 mb-1">
-                                            Long-term safety buffer
+                                    <p className="text-sm text-gray-600 mb-4">
+                                        No judgement. Just watching...
+                                    </p>
+
+                                    {expenses.filter(e => e.type !== 'estimate').length === 0 ? (
+                                        <div className="bg-white rounded-2xl p-6 shadow border-2 border-gray-100 text-center text-gray-500">
+                                            No expenses logged yet.
                                         </div>
-
-                                        <input
-                                            type="number"
-                                            value={cashBuffer}
-                                            onChange={(e) => setCashBuffer(Number(e.target.value) || 0)}
-                                            className="w-full p-4 text-3xl font-bold text-purple-600 rounded-2xl border-2 border-purple-200 focus:outline-none focus:border-purple-400 mb-3"
-                                        />
-
-
-                                        <p className="text-sm text-gray-600 mb-3">
-                                            Money you intentionally do not spend.
-                                            This is deducted from your usable cash.
-                                            Only adjust it when you intentionally move money.
-
-                                        </p>
-
-                                        {wealth.monthsRunway > 0 && (
-                                            <div className="text-sm font-semibold text-gray-700 mb-3">
-                                                ≈ Covers {wealth.monthsRunway} months of expenses
-                                            </div>
-                                        )}
-
-                                        <button
-                                            onClick={() => setView('dashboard')}
-                                            className="px-4 py-2 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold active:scale-95 transition"
-                                        >
-                                            ← Back to Home
-                                        </button>
-                                    </div>
+                                    ) : (
+                                        expenses
+                                            .filter(e => e.amount > 0)
+                                            .slice()
+                                            .reverse()
+                                            .map(expense => {
+                                                const colors = categoryColors[expense.category];
+                                                return (
+                                                    <div
+                                                        key={expense.id}
+                                                        onClick={() => {
+                                                            setSelectedExpense(expense);
+                                                            setEditExpense({ ...expense });
+                                                        }}
+                                                        className={`p-4 rounded-xl border-2 ${colors.border} ${colors.bg} cursor-pointer active:scale-95 transition`}
+                                                    >
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="font-medium truncate">
+                                                                {expense.description}
+                                                            </span>
+                                                            <span className="font-bold">
+                                                                ${expense.amount}
+                                                            </span>
+                                                        </div>
+                                                        <div className="text-xs text-gray-500 mt-1">
+                                                            {new Date(expense.date).toLocaleDateString()}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })
+                                    )}
                                 </div>
+                                )}
+                                {view === 'cashBuffer' && (
+                                    <div className="space-y-4">
+                                        <h3 className="text-xl font-bold text-gray-800">
+                                            Cash Buffer (No-Touchy)
+                                        </h3>
 
-                            )}
-                            {view === 'advice' && (
-                                <div className="space-y-3">
-                                    <div className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-2xl p-6 border-2 border-yellow-200">
-                                        <div className="flex items-start gap-3 mb-4">
-                                            <span className="text-4xl">{advice.emoji}</span>
-                                            <div className="flex-1">
-                                                <h3 className="font-bold text-gray-800 mb-2 text-lg">Your Personalized Tip</h3>
-                                                <p className="text-gray-700 leading-relaxed">{advice.text}</p>
+                                        <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-purple-100">
+                                            <div className="text-sm text-gray-500 mb-1">
+                                                Long-term safety buffer
                                             </div>
+
+                                            <input
+                                                type="number"
+                                                value={cashBuffer}
+                                                onChange={(e) => setCashBuffer(Number(e.target.value) || 0)}
+                                                className="w-full p-4 text-3xl font-bold text-purple-600 rounded-2xl border-2 border-purple-200 focus:outline-none focus:border-purple-400 mb-3"
+                                            />
+
+
+                                            <p className="text-sm text-gray-600 mb-3">
+                                                Money you intentionally do not spend.
+                                                This is deducted from your usable cash.
+                                                Only adjust it when you intentionally move money.
+
+                                            </p>
+
+                                            {wealth.monthsRunway > 0 && (
+                                                <div className="text-sm font-semibold text-gray-700 mb-3">
+                                                    ≈ Covers {wealth.monthsRunway} months of expenses
+                                                </div>
+                                            )}
+
+                                            <button
+                                                onClick={() => setView('dashboard')}
+                                                className="px-4 py-2 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold active:scale-95 transition"
+                                            >
+                                                ← Back to Home
+                                            </button>
                                         </div>
                                     </div>
 
-                                    <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-100">
-                                        <h3 className="font-bold text-gray-800 mb-3">Gentle Reminders</h3>
-                                        <div className="space-y-2 text-sm text-gray-600">
-                                            <div className="flex items-start gap-2">
-                                                <span>✨</span>
-                                                <p>Track the big stuff, estimate the small stuff</p>
+                                )}
+                                {view === 'advice' && (
+                                    <div className="space-y-3">
+                                        <div className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-2xl p-6 border-2 border-yellow-200">
+                                            <div className="flex items-start gap-3 mb-4">
+                                                <span className="text-4xl">{advice.emoji}</span>
+                                                <div className="flex-1">
+                                                    <h3 className="font-bold text-gray-800 mb-2 text-lg">Your Personalized Tip</h3>
+                                                    <p className="text-gray-700 leading-relaxed">{advice.text}</p>
+                                                </div>
                                             </div>
-                                            <div className="flex items-start gap-2">
-                                                <span>💰</span>
-                                                <p>Aim to build 3–6 months of expenses as a safety buffer</p>
-                                            </div>
-                                            <div className="flex items-start gap-2">
-                                                <span>🎯</span>
-                                                <p>Don't overthink it</p>
-                                            </div>
-                                            <div className="flex items-start gap-2">
-                                                <span>📊</span>
-                                                <p>Remember to use me time to time :D</p>
+                                        </div>
+
+                                        <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-100">
+                                            <h3 className="font-bold text-gray-800 mb-3">Gentle Reminders</h3>
+                                            <div className="space-y-2 text-sm text-gray-600">
+                                                <div className="flex items-start gap-2">
+                                                    <span>✨</span>
+                                                    <p>Track the big stuff, estimate the small stuff</p>
+                                                </div>
+                                                <div className="flex items-start gap-2">
+                                                    <span>💰</span>
+                                                    <p>Aim to build 3–6 months of expenses as a safety buffer</p>
+                                                </div>
+                                                <div className="flex items-start gap-2">
+                                                    <span>🎯</span>
+                                                    <p>Don't overthink it</p>
+                                                </div>
+                                                <div className="flex items-start gap-2">
+                                                    <span>📊</span>
+                                                    <p>Remember to use me time to time :D</p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
+                            </div>
                         </div>
+
+                        <button
+                            onClick={hardReset}
+                            className="text-[10px] text-gray-400 underline mt-1"
+                        >
+                            Reset all data
+                        </button>
+
+                        <button onClick={() => setShowLanding(true)}
+                            className="w-16 h-16 rounded-2xl bg-white shadow-lg active:scale-95 transition border-2 border-purple-200 p-1">
+                            <KombuchaBottle mood={getAvatarMood()} isHovering={false} isPetting={false} />
+                        </button>
+                        <button
+                            onClick={() => setSoundEnabled(prev => !prev)}
+                            className="w-10 h-10 rounded-xl bg-white shadow border-2 border-gray-200 active:scale-95 transition text-sm"
+                        >
+                            {soundEnabled ? '🔊' : '🔇'}
+                        </button>
+
                     </div>
-
-                    <button
-                        onClick={hardReset}
-                        className="text-[10px] text-gray-400 underline mt-1"
-                    >
-                        Reset all data
-                    </button>
-
-                    <button onClick={() => setShowLanding(true)}
-                        className="w-16 h-16 rounded-2xl bg-white shadow-lg active:scale-95 transition border-2 border-purple-200 p-1">
-                        <KombuchaBottle mood={getAvatarMood()} isHovering={false} isPetting={false} />
-                    </button>
-                    <button
-                        onClick={() => setSoundEnabled(prev => !prev)}
-                        className="w-10 h-10 rounded-xl bg-white shadow border-2 border-gray-200 active:scale-95 transition text-sm"
-                    >
-                        {soundEnabled ? '🔊' : '🔇'}
-                    </button>
-
                 </div>
-            </div>
-        );
-        const advice = getPersonalizedAdvice();
+            );
 
-        const getAvatarMood = () => {
-            if (spendingStatus === 'overspent') return 'worried';
-            if (netWorth < 0) return 'worried';
-            if (cashBufferRate > 30) return 'excited';
-            if (cashBufferRate > 20) return 'happy';
-            if (totalDebt > income * 6) return 'concerned';
-            if (monthlyNet < 0) return 'sad';
-            return 'neutral';
-        };
 
-        const getAvatarMessage = () => {
-            if (wealth.monthsRunway && wealth.monthsRunway < 1.5) {
-                return [`Let’s protect your runway first 🛡️`, `Cash = oxygen right now`];
-            }
-
-            if (wealth.bufferProgress < 30) {
-                return [`Build the base before climbing 🧱`, `Stability creates freedom`];
-            }
-            // Phase-based coaching (primary identity)
-            if (phaseCoach[wealthPhase]) {
-                const messages = phaseCoach[wealthPhase];
-                return [messages[Math.floor(Math.random() * messages.length)]];
-            }
-
-            const mood = getAvatarMood();
-            const messages = {
-                excited: [`${userName}! You're on fire! 🚀`],
-                happy: [`Hey ${userName}! Looking good! 😊`],
-                neutral: [`Hi ${userName}! 💪`],
-                concerned: [`We've got this, ${userName}! 💙`],
-                sad: [`Let's turn this around! 🌈`],
-                worried: [`I'm here for you! 💙`]
+            const getAvatarMood = () => {
+                if (spendingStatus === 'overspent') return 'worried';
+                if (netWorth < 0) return 'worried';
+                if (cashBufferRate > 30) return 'excited';
+                if (cashBufferRate > 20) return 'happy';
+                if (totalDebt > income * 6) return 'concerned';
+                if (monthlyNet < 0) return 'sad';
+                return 'neutral';
             };
-            return messages[mood] || messages.neutral;
-        };
 
-        const getBottleColor = () => {
-            const mood = getAvatarMood();
-            const phase = wealthPhase;
-            const colors = {
-                excited: { bottle: '#FCD34D', liquid: '#F59E0B', cap: '#DC2626', label: '#FEF3C7' },
-                happy: { bottle: '#A7F3D0', liquid: '#34D399', cap: '#059669', label: '#D1FAE5' },
-                neutral:
-                    phase === 'scale'
-                        ? { bottle: '#C7D2FE', liquid: '#6366F1', cap: '#4338CA', label: '#E0E7FF' }
-                        : phase === 'stabilize'
-                            ? { bottle: '#BBF7D0', liquid: '#22C55E', cap: '#15803D', label: '#DCFCE7' }
-                            : { bottle: '#E5E7EB', liquid: '#9CA3AF', cap: '#6B7280', label: '#F3F4F6' },
-                concerned: { bottle: '#DDD6FE', liquid: '#A78BFA', cap: '#7C3AED', label: '#EDE9FE' },
-                sad: { bottle: '#E2E8F0', liquid: '#94A3B8', cap: '#475569', label: '#F1F5F9' },
-                worried: { bottle: '#FECACA', liquid: '#F87171', cap: '#DC2626', label: '#FEE2E2' }
+            const getAvatarMessage = () => {
+                if (wealth.monthsRunway && wealth.monthsRunway < 1.5) {
+                    return [`Let’s protect your runway first 🛡️`, `Cash = oxygen right now`];
+                }
+
+                if (wealth.bufferProgress < 30) {
+                    return [`Build the base before climbing 🧱`, `Stability creates freedom`];
+                }
+                // Phase-based coaching (primary identity)
+                if (phaseCoach[wealthPhase]) {
+                    const messages = phaseCoach[wealthPhase];
+                    return [messages[Math.floor(Math.random() * messages.length)]];
+                }
+
+                const mood = getAvatarMood();
+                const messages = {
+                    excited: [`${userName}! You're on fire! 🚀`],
+                    happy: [`Hey ${userName}! Looking good! 😊`],
+                    neutral: [`Hi ${userName}! 💪`],
+                    concerned: [`We've got this, ${userName}! 💙`],
+                    sad: [`Let's turn this around! 🌈`],
+                    worried: [`I'm here for you! 💙`]
+                };
+                return messages[mood] || messages.neutral;
             };
-            return colors[mood] || colors.neutral;
-        };
 
-        const petAvatar = () => {
-            playSound('pop');
-            setUserInteraction(prev => prev + 1);
-            setIsPetting(true);
-            setShowHearts(true);
-            setTimeout(() => {
-                setIsPetting(false);
-                setShowHearts(false);
-            }, 1500);
-        };
+            const getBottleColor = () => {
+                const mood = getAvatarMood();
+                const phase = wealthPhase;
+                const colors = {
+                    excited: { bottle: '#FCD34D', liquid: '#F59E0B', cap: '#DC2626', label: '#FEF3C7' },
+                    happy: { bottle: '#A7F3D0', liquid: '#34D399', cap: '#059669', label: '#D1FAE5' },
+                    neutral:
+                        phase === 'scale'
+                            ? { bottle: '#C7D2FE', liquid: '#6366F1', cap: '#4338CA', label: '#E0E7FF' }
+                            : phase === 'stabilize'
+                                ? { bottle: '#BBF7D0', liquid: '#22C55E', cap: '#15803D', label: '#DCFCE7' }
+                                : { bottle: '#E5E7EB', liquid: '#9CA3AF', cap: '#6B7280', label: '#F3F4F6' },
+                    concerned: { bottle: '#DDD6FE', liquid: '#A78BFA', cap: '#7C3AED', label: '#EDE9FE' },
+                    sad: { bottle: '#E2E8F0', liquid: '#94A3B8', cap: '#475569', label: '#F1F5F9' },
+                    worried: { bottle: '#FECACA', liquid: '#F87171', cap: '#DC2626', label: '#FEE2E2' }
+                };
+                return colors[mood] || colors.neutral;
+            };
 
 
-        const KombuchaBottle = ({ mood, isHovering, isPetting }) => {
-            const colors = getBottleColor();
-            const [bubblePhase, setBubblePhase] = useState(0);
+            const KombuchaBottle = ({ mood, isHovering, isPetting }) => {
+                const colors = getBottleColor();
+                const [bubblePhase, setBubblePhase] = useState(0);
 
-            useEffect(() => {
-                const interval = setInterval(() => {
-                    setBubblePhase(prev => (prev + 1) % 3);
-                }, 2000);
-                return () => clearInterval(interval);
-            }, []);
+                useEffect(() => {
+                    const interval = setInterval(() => {
+                        setBubblePhase(prev => (prev + 1) % 3);
+                    }, 2000);
+                    return () => clearInterval(interval);
+                }, []);
 
-            const transform = isPetting ? 'scale(1.1)' : isHovering ? 'scale(1.05)' : 'scale(1)';
+                const transform = isPetting ? 'scale(1.1)' : isHovering ? 'scale(1.05)' : 'scale(1)';
 
-            return (
-                <svg viewBox="0 0 200 200" className="w-full h-full" style={{ transform, transition: 'transform 0.3s ease-out' }}>
-                    <defs>
-                        <linearGradient id={`bottleGradient-${mood}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stopColor={colors.bottle} stopOpacity="0.9" />
-                            <stop offset="100%" stopColor={colors.bottle} stopOpacity="0.7" />
-                        </linearGradient>
-                        <linearGradient id={`liquidGradient-${mood}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stopColor={colors.liquid} />
-                            <stop offset="100%" stopColor={colors.liquid} stopOpacity="0.8" />
-                        </linearGradient>
-                    </defs>
+                return (
+                    <svg viewBox="0 0 200 200" className="w-full h-full" style={{ transform, transition: 'transform 0.3s ease-out' }}>
+                        <defs>
+                            <linearGradient id={`bottleGradient-${mood}`} x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stopColor={colors.bottle} stopOpacity="0.9" />
+                                <stop offset="100%" stopColor={colors.bottle} stopOpacity="0.7" />
+                            </linearGradient>
+                            <linearGradient id={`liquidGradient-${mood}`} x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stopColor={colors.liquid} />
+                                <stop offset="100%" stopColor={colors.liquid} stopOpacity="0.8" />
+                            </linearGradient>
+                        </defs>
 
-                    <ellipse cx="100" cy="185" rx="35" ry="6" fill="#000000" opacity="0.1" />
-                    <rect x="70" y="80" width="60" height="100" rx="8" fill={`url(#bottleGradient-${mood})`} stroke={colors.bottle} strokeWidth="2" />
-                    <rect x="75" y="100" width="50" height="75" rx="5" fill={`url(#liquidGradient-${mood})`} />
+                        <ellipse cx="100" cy="185" rx="35" ry="6" fill="#000000" opacity="0.1" />
+                        <rect x="70" y="80" width="60" height="100" rx="8" fill={`url(#bottleGradient-${mood})`} stroke={colors.bottle} strokeWidth="2" />
+                        <rect x="75" y="100" width="50" height="75" rx="5" fill={`url(#liquidGradient-${mood})`} />
 
-                    <g opacity="0.6">
-                        <circle cx="85" cy={150 - bubblePhase * 10} r="3" fill="white">
-                            <animate attributeName="cy" values="150;120;150" dur="3s" repeatCount="indefinite" />
-                        </circle>
-                        <circle cx="95" cy={160 - bubblePhase * 8} r="2" fill="white">
-                            <animate attributeName="cy" values="160;135;160" dur="3.5s" repeatCount="indefinite" />
-                        </circle>
-                        <circle cx="110" cy={155 - bubblePhase * 12} r="2.5" fill="white">
-                            <animate attributeName="cy" values="155;125;155" dur="2.8s" repeatCount="indefinite" />
-                        </circle>
-                        <circle cx="100" cy={145 - bubblePhase * 15} r="2" fill="white">
-                            <animate attributeName="cy" values="145;115;145" dur="3.2s" repeatCount="indefinite" />
-                        </circle>
-                    </g>
+                        <g opacity="0.6">
+                            <circle cx="85" cy={150 - bubblePhase * 10} r="3" fill="white">
+                                <animate attributeName="cy" values="150;120;150" dur="3s" repeatCount="indefinite" />
+                            </circle>
+                            <circle cx="95" cy={160 - bubblePhase * 8} r="2" fill="white">
+                                <animate attributeName="cy" values="160;135;160" dur="3.5s" repeatCount="indefinite" />
+                            </circle>
+                            <circle cx="110" cy={155 - bubblePhase * 12} r="2.5" fill="white">
+                                <animate attributeName="cy" values="155;125;155" dur="2.8s" repeatCount="indefinite" />
+                            </circle>
+                            <circle cx="100" cy={145 - bubblePhase * 15} r="2" fill="white">
+                                <animate attributeName="cy" values="145;115;145" dur="3.2s" repeatCount="indefinite" />
+                            </circle>
+                        </g>
 
-                    <rect x="85" y="60" width="30" height="25" rx="3" fill={`url(#bottleGradient-${mood})`} stroke={colors.bottle} strokeWidth="2" />
-                    <rect x="82" y="45" width="36" height="18" rx="4" fill={colors.cap} stroke={colors.cap} strokeWidth="1" />
-                    <rect x="85" y="48" width="30" height="3" fill="#ffffff" opacity="0.3" />
+                        <rect x="85" y="60" width="30" height="25" rx="3" fill={`url(#bottleGradient-${mood})`} stroke={colors.bottle} strokeWidth="2" />
+                        <rect x="82" y="45" width="36" height="18" rx="4" fill={colors.cap} stroke={colors.cap} strokeWidth="1" />
+                        <rect x="85" y="48" width="30" height="3" fill="#ffffff" opacity="0.3" />
 
-                    <rect x="75" y="110" width="50" height="25" rx="3" fill={colors.label} opacity="0.8" />
-                    <text x="100" y="120" textAnchor="middle" fontSize="8" fontWeight="bold" fill={colors.cap}>KOMBU</text>
-                    <text x="100" y="128" textAnchor="middle" fontSize="6" fill={colors.liquid}>BREW</text>
+                        <rect x="75" y="110" width="50" height="25" rx="3" fill={colors.label} opacity="0.8" />
+                        <text x="100" y="120" textAnchor="middle" fontSize="8" fontWeight="bold" fill={colors.cap}>KOMBU</text>
+                        <text x="100" y="128" textAnchor="middle" fontSize="6" fill={colors.liquid}>BREW</text>
 
-                    <g>
-                        {mood === 'excited' && (
-                            <g>
-                                <circle cx="90" cy="135" r="4" fill="#1F2937" />
-                                <circle cx="110" cy="135" r="4" fill="#1F2937" />
-                                <circle cx="91" cy="134" r="1.5" fill="white" />
-                                <circle cx="111" cy="134" r="1.5" fill="white" />
-                                <text x="87" y="130" fontSize="6">✨</text>
-                                <text x="107" y="130" fontSize="6">✨</text>
-                            </g>
-                        )}
+                        <g>
+                            {mood === 'excited' && (
+                                <g>
+                                    <circle cx="90" cy="135" r="4" fill="#1F2937" />
+                                    <circle cx="110" cy="135" r="4" fill="#1F2937" />
+                                    <circle cx="91" cy="134" r="1.5" fill="white" />
+                                    <circle cx="111" cy="134" r="1.5" fill="white" />
+                                    <text x="87" y="130" fontSize="6">✨</text>
+                                    <text x="107" y="130" fontSize="6">✨</text>
+                                </g>
+                            )}
 
-                        {mood === 'happy' && (
-                            <g>
-                                <ellipse cx="90" cy="135" rx="3.5" ry="4" fill="#1F2937" />
-                                <ellipse cx="110" cy="135" rx="3.5" ry="4" fill="#1F2937" />
-                                <circle cx="91" cy="134" r="1.5" fill="white" />
-                                <circle cx="111" cy="134" r="1.5" fill="white" />
-                            </g>
-                        )}
+                            {mood === 'happy' && (
+                                <g>
+                                    <ellipse cx="90" cy="135" rx="3.5" ry="4" fill="#1F2937" />
+                                    <ellipse cx="110" cy="135" rx="3.5" ry="4" fill="#1F2937" />
+                                    <circle cx="91" cy="134" r="1.5" fill="white" />
+                                    <circle cx="111" cy="134" r="1.5" fill="white" />
+                                </g>
+                            )}
 
-                        {mood === 'neutral' && (
-                            <g>
-                                <circle cx="90" cy="135" r="3" fill="#1F2937" />
-                                <circle cx="110" cy="135" r="3" fill="#1F2937" />
-                                <circle cx="91" cy="134" r="1" fill="white" />
-                                <circle cx="111" cy="134" r="1" fill="white" />
-                            </g>
-                        )}
+                            {mood === 'neutral' && (
+                                <g>
+                                    <circle cx="90" cy="135" r="3" fill="#1F2937" />
+                                    <circle cx="110" cy="135" r="3" fill="#1F2937" />
+                                    <circle cx="91" cy="134" r="1" fill="white" />
+                                    <circle cx="111" cy="134" r="1" fill="white" />
+                                </g>
+                            )}
 
-                        {(mood === 'concerned' || mood === 'sad') && (
-                            <g>
-                                <ellipse cx="90" cy="136" rx="3" ry="2.5" fill="#1F2937" />
-                                <ellipse cx="110" cy="136" rx="3" ry="2.5" fill="#1F2937" />
-                                <circle cx="91" cy="135" r="1" fill="white" />
-                                <circle cx="111" cy="135" r="1" fill="white" />
-                            </g>
-                        )}
+                            {(mood === 'concerned' || mood === 'sad') && (
+                                <g>
+                                    <ellipse cx="90" cy="136" rx="3" ry="2.5" fill="#1F2937" />
+                                    <ellipse cx="110" cy="136" rx="3" ry="2.5" fill="#1F2937" />
+                                    <circle cx="91" cy="135" r="1" fill="white" />
+                                    <circle cx="111" cy="135" r="1" fill="white" />
+                                </g>
+                            )}
 
-                        {mood === 'worried' && (
-                            <g>
-                                <ellipse cx="90" cy="137" rx="3" ry="4" fill="#1F2937" />
-                                <ellipse cx="110" cy="137" rx="3" ry="4" fill="#1F2937" />
-                                <circle cx="91" cy="135" r="1" fill="white" />
-                                <circle cx="111" cy="135" r="1" fill="white" />
-                                <ellipse cx="115" cy="140" rx="2" ry="3" fill="#60A5FA" opacity="0.7">
-                                    <animate attributeName="cy" values="140;148;140" dur="2s" repeatCount="indefinite" />
-                                    <animate attributeName="opacity" values="0.7;0;0.7" dur="2s" repeatCount="indefinite" />
-                                </ellipse>
-                            </g>
-                        )}
+                            {mood === 'worried' && (
+                                <g>
+                                    <ellipse cx="90" cy="137" rx="3" ry="4" fill="#1F2937" />
+                                    <ellipse cx="110" cy="137" rx="3" ry="4" fill="#1F2937" />
+                                    <circle cx="91" cy="135" r="1" fill="white" />
+                                    <circle cx="111" cy="135" r="1" fill="white" />
+                                    <ellipse cx="115" cy="140" rx="2" ry="3" fill="#60A5FA" opacity="0.7">
+                                        <animate attributeName="cy" values="140;148;140" dur="2s" repeatCount="indefinite" />
+                                        <animate attributeName="opacity" values="0.7;0;0.7" dur="2s" repeatCount="indefinite" />
+                                    </ellipse>
+                                </g>
+                            )}
 
-                        {mood === 'excited' && (
-                            <path d="M 87 145 Q 100 153 113 145" stroke="#1F2937" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-                        )}
+                            {mood === 'excited' && (
+                                <path d="M 87 145 Q 100 153 113 145" stroke="#1F2937" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+                            )}
 
-                        {mood === 'happy' && (
-                            <path d="M 90 145 Q 100 150 110 145" stroke="#1F2937" strokeWidth="2" fill="none" strokeLinecap="round" />
-                        )}
+                            {mood === 'happy' && (
+                                <path d="M 90 145 Q 100 150 110 145" stroke="#1F2937" strokeWidth="2" fill="none" strokeLinecap="round" />
+                            )}
 
-                        {mood === 'neutral' && (
-                            <line x1="90" y1="147" x2="110" y2="147" stroke="#1F2937" strokeWidth="2" strokeLinecap="round" />
-                        )}
+                            {mood === 'neutral' && (
+                                <line x1="90" y1="147" x2="110" y2="147" stroke="#1F2937" strokeWidth="2" strokeLinecap="round" />
+                            )}
 
-                        {(mood === 'concerned' || mood === 'sad') && (
-                            <path d="M 90 150 Q 100 146 110 150" stroke="#1F2937" strokeWidth="2" fill="none" strokeLinecap="round" />
-                        )}
+                            {(mood === 'concerned' || mood === 'sad') && (
+                                <path d="M 90 150 Q 100 146 110 150" stroke="#1F2937" strokeWidth="2" fill="none" strokeLinecap="round" />
+                            )}
 
-                        {mood === 'worried' && (
-                            <path d="M 90 152 Q 100 148 110 152" stroke="#1F2937" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-                        )}
+                            {mood === 'worried' && (
+                                <path d="M 90 152 Q 100 148 110 152" stroke="#1F2937" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+                            )}
 
-                        {(mood === 'excited' || mood === 'happy') && (
-                            <g opacity="0.4">
-                                <circle cx="78" cy="142" r="5" fill="#F87171" />
-                                <circle cx="122" cy="142" r="5" fill="#F87171" />
-                            </g>
-                        )}
-                    </g>
+                            {(mood === 'excited' || mood === 'happy') && (
+                                <g opacity="0.4">
+                                    <circle cx="78" cy="142" r="5" fill="#F87171" />
+                                    <circle cx="122" cy="142" r="5" fill="#F87171" />
+                                </g>
+                            )}
+                        </g>
 
-                    <g opacity="0.3">
-                        <circle cx="80" cy="90" r="3" fill="white" />
-                        <circle cx="120" cy="95" r="2" fill="white" />
-                    </g>
-                </svg>
+                        <g opacity="0.3">
+                            <circle cx="80" cy="90" r="3" fill="white" />
+                            <circle cx="120" cy="95" r="2" fill="white" />
+                        </g>
+                    </svg>
+                );
+            };
+            // 🧠 Kombucha Coach Messages (by phase)
+            const phaseCoach = {
+                survive: [
+                    'Let’s slow things down 🛟',
+                    'Protecting cash is the win right now',
+                    'Breathe — stability comes first'
+                ],
+                stabilize: [
+                    'Nice work. Consistency builds freedom 🧱',
+                    'This is where momentum forms',
+                    'Small wins add up'
+                ],
+                scale: [
+                    'You’re playing offense now 🚀',
+                    'Think in options, not restrictions',
+                    'Money should buy freedom, not stress'
+                ]
+            };
+
+            // 🎨 Wealth Phase Themes
+            const phaseThemes = {
+                survive: {
+                    label: '🛟 Survival Mode',
+                    description: 'Protect cash and preserve runway'
+                },
+                stabilize: {
+                    label: '🧱 Stabilizing',
+                    description: 'Building consistency and buffer'
+                },
+                scale: {
+                    label: '🚀 Scaling',
+                    description: 'Expanding freedom and options'
+                }
+            };
+
+
+            const categoryColors = {
+                food: { bg: 'bg-orange-100', text: 'text-orange-600', border: 'border-orange-200' },
+                transport: { bg: 'bg-blue-100', text: 'text-blue-600', border: 'border-blue-200' },
+                housing: { bg: 'bg-purple-100', text: 'text-purple-600', border: 'border-purple-200' },
+                entertainment: { bg: 'bg-pink-100', text: 'text-pink-600', border: 'border-pink-200' },
+                utilities: { bg: 'bg-green-100', text: 'text-green-600', border: 'border-green-200' },
+                other: { bg: 'bg-gray-100', text: 'text-gray-600', border: 'border-gray-200' }
+            };
+
+            const onboardingQuestions = [
+                {
+                    title: "Welcome! What's your name?",
+                    subtitle: "Let's get to know each other! ✨",
+                    field: (
+                        <input type="text" placeholder="Enter your name..." value={userName} onChange={(e) => setUserName(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && canProceed && handleNext()}
+                            className="w-full p-4 text-lg rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none bg-white shadow-sm transition-all" autoFocus />
+                    )
+                },
+                {
+                    title: "How much do you earn monthly?",
+                    subtitle: "This helps us understand your cash flow 💰",
+                    field: (
+                        <input type="number" placeholder="e.g., 5000" value={income || ''} onChange={(e) => {
+                            const value = parseFloat(e.target.value) || 0;
+                            setIncomeLogs(prev => {
+                                const others = prev.filter(i => i.month !== currentMonthKey);
+                                return [...others, { month: currentMonthKey, amount: value }];
+                            });
+                        }}
+                            onKeyPress={(e) => e.key === 'Enter' && canProceed && handleNext()}
+                            className="w-full p-4 text-lg rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none bg-white shadow-sm transition-all" autoFocus />
+                    )
+                },
+                {
+                    title: "What's in your bank account right now?",
+                    subtitle: "Just your checking/savings total 🏦",
+                    field: (
+                        <input type="number" placeholder="e.g., 10000" value={bankBalance || ''} onChange={(e) => setBankBalance(parseFloat(e.target.value) || 0)}
+                            onKeyPress={(e) => e.key === 'Enter' && canProceed && handleNext()}
+                            className="w-full p-4 text-lg rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none bg-white shadow-sm transition-all" autoFocus />
+                    )
+                },
+                {
+                    title: "Any credit card debt?",
+                    subtitle: "It's okay, we're here to help! 💳",
+                    field: (
+                        <input type="number" placeholder="e.g., 0 (enter 0 if none)" value={creditCardDebt || ''} onChange={(e) => setCreditCardDebt(parseFloat(e.target.value) || 0)}
+                            onKeyPress={(e) => e.key === 'Enter' && canProceed && handleNext()}
+                            className="w-full p-4 text-lg rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none bg-white shadow-sm transition-all" autoFocus />
+                    )
+                },
+                {
+                    title: "Any loans?",
+                    subtitle: "You can skip this and add them later! 🚗",
+                    field: (
+                        <div className="text-center py-8">
+                            <p className="text-gray-600 mb-4">You can manage loans in the app anytime</p>
+                            <button onClick={handleNext}
+                                className="px-8 py-3 bg-purple-100 text-purple-600 rounded-xl font-semibold active:bg-purple-200 transition">
+                                Skip for now
+                            </button>
+                        </div>
+                    )
+                },
+                {
+                    title: "How much you want to put aside every month? (No touchy money)",
+                    subtitle: "Emergency fund / money you won’t spend 🛡️",
+                    field: (
+                        <input type="number" placeholder="e.g., 6000" value={cashBuffer || ''} onChange={(e) => setCashBuffer(parseFloat(e.target.value) || 0)}
+
+                            onKeyPress={(e) => e.key === 'Enter' && canProceed && handleNext()}
+                            className="w-full p-4 text-lg rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none bg-white shadow-sm transition-all" autoFocus />
+                    )
+                }
+            ];
+            const DashboardView = (
+                <div className="space-y-4">
+                    {/* DASHBOARD CONTENT GOES HERE */}
+                </div>
+            );
+
+            const IncomeView = (
+                <div className="space-y-4">
+                    {/* INCOME VIEW CONTENT */}
+                </div>
+            );
+
+            const ExpensesView = (
+                <div className="space-y-4">
+                    {/* EXPENSES VIEW CONTENT */}
+                </div>
+            );
+
+            const CashBufferView = (
+                <div className="space-y-4">
+                    {/* CASH BUFFER VIEW CONTENT */}
+                </div>
             );
         };
-        // 🧠 Kombucha Coach Messages (by phase)
-        const phaseCoach = {
-            survive: [
-                'Let’s slow things down 🛟',
-                'Protecting cash is the win right now',
-                'Breathe — stability comes first'
-            ],
-            stabilize: [
-                'Nice work. Consistency builds freedom 🧱',
-                'This is where momentum forms',
-                'Small wins add up'
-            ],
-            scale: [
-                'You’re playing offense now 🚀',
-                'Think in options, not restrictions',
-                'Money should buy freedom, not stress'
-            ]
-        };
-
-        // 🎨 Wealth Phase Themes
-        const phaseThemes = {
-            survive: {
-                label: '🛟 Survival Mode',
-                description: 'Protect cash and preserve runway'
-            },
-            stabilize: {
-                label: '🧱 Stabilizing',
-                description: 'Building consistency and buffer'
-            },
-            scale: {
-                label: '🚀 Scaling',
-                description: 'Expanding freedom and options'
-            }
-        };
-
-
-        const categoryColors = {
-            food: { bg: 'bg-orange-100', text: 'text-orange-600', border: 'border-orange-200' },
-            transport: { bg: 'bg-blue-100', text: 'text-blue-600', border: 'border-blue-200' },
-            housing: { bg: 'bg-purple-100', text: 'text-purple-600', border: 'border-purple-200' },
-            entertainment: { bg: 'bg-pink-100', text: 'text-pink-600', border: 'border-pink-200' },
-            utilities: { bg: 'bg-green-100', text: 'text-green-600', border: 'border-green-200' },
-            other: { bg: 'bg-gray-100', text: 'text-gray-600', border: 'border-gray-200' }
-        };
-
-        const onboardingQuestions = [
-            {
-                title: "Welcome! What's your name?",
-                subtitle: "Let's get to know each other! ✨",
-                field: (
-                    <input type="text" placeholder="Enter your name..." value={userName} onChange={(e) => setUserName(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && canProceed && handleNext()}
-                        className="w-full p-4 text-lg rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none bg-white shadow-sm transition-all" autoFocus />
-                )
-            },
-            {
-                title: "How much do you earn monthly?",
-                subtitle: "This helps us understand your cash flow 💰",
-                field: (
-                    <input type="number" placeholder="e.g., 5000" value={income || ''} onChange={(e) => {
-                        const value = parseFloat(e.target.value) || 0;
-                        setIncomeLogs(prev => {
-                            const others = prev.filter(i => i.month !== currentMonthKey);
-                            return [...others, { month: currentMonthKey, amount: value }];
-                        });
-                    }}
-                        onKeyPress={(e) => e.key === 'Enter' && canProceed && handleNext()}
-                        className="w-full p-4 text-lg rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none bg-white shadow-sm transition-all" autoFocus />
-                )
-            },
-            {
-                title: "What's in your bank account right now?",
-                subtitle: "Just your checking/savings total 🏦",
-                field: (
-                    <input type="number" placeholder="e.g., 10000" value={bankBalance || ''} onChange={(e) => setBankBalance(parseFloat(e.target.value) || 0)}
-                        onKeyPress={(e) => e.key === 'Enter' && canProceed && handleNext()}
-                        className="w-full p-4 text-lg rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none bg-white shadow-sm transition-all" autoFocus />
-                )
-            },
-            {
-                title: "Any credit card debt?",
-                subtitle: "It's okay, we're here to help! 💳",
-                field: (
-                    <input type="number" placeholder="e.g., 0 (enter 0 if none)" value={creditCardDebt || ''} onChange={(e) => setCreditCardDebt(parseFloat(e.target.value) || 0)}
-                        onKeyPress={(e) => e.key === 'Enter' && canProceed && handleNext()}
-                        className="w-full p-4 text-lg rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none bg-white shadow-sm transition-all" autoFocus />
-                )
-            },
-            {
-                title: "Any loans?",
-                subtitle: "You can skip this and add them later! 🚗",
-                field: (
-                    <div className="text-center py-8">
-                        <p className="text-gray-600 mb-4">You can manage loans in the app anytime</p>
-                        <button onClick={handleNext}
-                            className="px-8 py-3 bg-purple-100 text-purple-600 rounded-xl font-semibold active:bg-purple-200 transition">
-                            Skip for now
-                        </button>
-                    </div>
-                )
-            },
-            {
-                title: "How much you want to put aside every month? (No touchy money)",
-                subtitle: "Emergency fund / money you won’t spend 🛡️",
-                field: (
-                    <input type="number" placeholder="e.g., 6000" value={cashBuffer || ''} onChange={(e) => setCashBuffer(parseFloat(e.target.value) || 0)}
-
-                        onKeyPress={(e) => e.key === 'Enter' && canProceed && handleNext()}
-                        className="w-full p-4 text-lg rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none bg-white shadow-sm transition-all" autoFocus />
-                )
-            }
-        ];
-        const DashboardView = (
-            <div className="space-y-4">
-                {/* DASHBOARD CONTENT GOES HERE */}
-            </div>
-        );
-
-        const IncomeView = (
-            <div className="space-y-4">
-                {/* INCOME VIEW CONTENT */}
-            </div>
-        );
-
-        const ExpensesView = (
-            <div className="space-y-4">
-                {/* EXPENSES VIEW CONTENT */}
-            </div>
-        );
-
-        const CashBufferView = (
-            <div className="space-y-4">
-                {/* CASH BUFFER VIEW CONTENT */}
-            </div>
-        );
-
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<FinanceApp />);
     </script>
