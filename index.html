@@ -1044,11 +1044,6 @@
         });
 
         const FinanceApp = () => {
-            return (
-                <div style={{ padding: 40, fontSize: 24 }}>
-                    React is alive ✅
-                </div>
-            );
 
             const [soundEnabled, setSoundEnabled] = useState(true);
             const [isFirstTime, setIsFirstTime] = useState(true);
@@ -2772,6 +2767,11 @@
             const CashBufferView = (
                 <div className="space-y-4">
                     {/* CASH BUFFER VIEW CONTENT */}
+                </div>
+            );
+            return (
+                <div style={{ padding: 40 }}>
+                    <h1>Finance App Loaded</h1>
                 </div>
             );
         };
