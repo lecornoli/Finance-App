@@ -1044,6 +1044,12 @@
         });
 
         const FinanceApp = () => {
+            return (
+                <div style={{ padding: 40, fontSize: 24 }}>
+                    React is alive ✅
+                </div>
+            );
+
             const [soundEnabled, setSoundEnabled] = useState(true);
             const [isFirstTime, setIsFirstTime] = useState(true);
             const [onboardingStep, setOnboardingStep] = useState(0);
@@ -1584,7 +1590,7 @@
                             </div>
 
                             <div className="mb-8 relative">
-                                <div 
+                                <div
                                     className="w-64 h-64 mx-auto mb-6 cursor-pointer relative active:scale-95 transition-transform" style={{ userSelect: 'none' }}>
                                     <div className="absolute inset-0 bg-white rounded-full shadow-2xl"></div>
                                     <div className="relative z-10 p-8">
