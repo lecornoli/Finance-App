@@ -2375,9 +2375,9 @@
                                         ${monthlyNet.toLocaleString()}
                                     </div>
                                     <p className="text-xs text-gray-500 mt-1">
-                                        {monthlyNet > 0 && '📈'`You’re adding ${monthlyNet.toLocaleString()} to your future each month`}
-                                        {monthlyNet === 0 && '➖' `You’re breaking even - don't sweat it babe`}
-                                        {monthlyNet < 0 && '📉'`You’re leaking ${Math.abs(monthlyNet).toLocaleString()} each month`}
+                                        {monthlyNet > 0 && `📈 You’re adding ${monthlyNet.toLocaleString()} to your future each month`}
+                                        {monthlyNet === 0 && `➖ You’re breaking even - don't sweat it babe`}
+                                        {monthlyNet < 0 && `📉 You’re leaking ${Math.abs(monthlyNet).toLocaleString()} each month`}
                                     </p>
 
                                     <span className="text-xl">💰</span>
