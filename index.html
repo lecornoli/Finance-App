@@ -1451,40 +1451,6 @@
             };
 
 
-            // Cash flow warning
-            if (safeToSpend < 100 && safeToSpend > 0) {
-                adviceList.push({
-                    emoji: '⚠️',
-                    text: `Only $${safeToSpend.toFixed(0)} wiggle room this month. Maybe skip that dinner out?`,
-                    tone: 'caution'
-                });
-            }
-            // Runway awareness
-            if (wealth.monthsRunway > 0 && wealth.monthsRunway < 2) {
-                adviceList.push({
-                    emoji: '🛟',
-                    text: `You have about ${wealth.monthsRunway} months of runway. Priority now: preserve cash.`,
-                    tone: 'warning'
-                });
-            }
-
-            // Buffer mindset
-            if (wealth.bufferProgress < 50 && safeToSpend > 0) {
-                adviceList.push({
-                    emoji: '🏗️',
-                    text: `Before upgrading lifestyle, finish building your safety buffer (${wealth.bufferProgress}% done).`,
-                    tone: 'strategy'
-                });
-            }
-            // Default encouragement
-            if (adviceList.length === 0) {
-                adviceList.push({
-                    emoji: '✨',
-                    text: `You're doing great! Just keep tracking the big stuff.`,
-                    tone: 'encouragement'
-                });
-            }
-
             return adviceList[Math.floor(Math.random() * adviceList.length)];
         };
 
